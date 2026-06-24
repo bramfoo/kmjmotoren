@@ -153,6 +153,49 @@ app.delete("/api/products/:id", requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
+// Toggle reservation (e.g. release a reserved product back to available)
+app.patch("/api/products/:id", requireAuth, (req, res) => {
+  const row = db.prepare("SELECT * FROM products WHERE id = ?").get(req.params.id);
+  if (!row) return res.status(404).json({ error: "Niet gevonden." });
+  if (req.body.reserved !== undefined) {
+    db.prepare("UPDATE products SET reserved = ? WHERE id = ?").run(req.body.reserved ? 1 : 0, req.params.id);
+  }
+  res.json(withImages(db.prepare("SELECT * FROM products WHERE id = ?").get(req.params.id)));
+});
+
+// ── Orders (purchases / reservations) ───────────────────────────────
+app.post("/api/orders", (req, res) => {
+  const b = req.body || {};
+  const fields = {
+    voornaam: (b.voornaam || "").trim(),
+    achternaam: (b.achternaam || "").trim(),
+    adres: (b.adres || "").trim(),
+    email: (b.email || "").trim(),
+    telefoon: (b.telefoon || "").trim(),
+  };
+  if (!fields.voornaam || !fields.achternaam || !fields.adres || !fields.email || !fields.telefoon) {
+    return res.status(400).json({ error: "Vul alle velden in." });
+  }
+  const product = db.prepare("SELECT * FROM products WHERE id = ?").get(b.product_id);
+  if (!product) return res.status(404).json({ error: "Product niet gevonden." });
+  if (product.reserved) return res.status(409).json({ error: "Dit product is al gereserveerd." });
+
+  db.prepare(
+    "INSERT INTO orders (product_id, product_name, voornaam, achternaam, adres, email, telefoon) VALUES (?, ?, ?, ?, ?, ?, ?)"
+  ).run(product.id, product.name, fields.voornaam, fields.achternaam, fields.adres, fields.email, fields.telefoon);
+  db.prepare("UPDATE products SET reserved = 1 WHERE id = ?").run(product.id);
+  res.status(201).json({ ok: true });
+});
+
+app.get("/api/orders", requireAuth, (_req, res) => {
+  res.json(db.prepare("SELECT * FROM orders ORDER BY created_at DESC, id DESC").all());
+});
+
+app.delete("/api/orders/:id", requireAuth, (req, res) => {
+  db.prepare("DELETE FROM orders WHERE id = ?").run(req.params.id);
+  res.json({ ok: true });
+});
+
 // ── Gallery ─────────────────────────────────────────────────────────
 app.get("/api/gallery", (_req, res) => {
   const rows = db.prepare("SELECT * FROM gallery ORDER BY created_at DESC, id DESC").all();
@@ -279,6 +322,7 @@ app.get("/api/stats", requireAuth, (_req, res) => {
     },
     products: db.prepare("SELECT COUNT(*) c FROM products").get().c,
     gallery: db.prepare("SELECT COUNT(*) c FROM gallery").get().c,
+    orders: db.prepare("SELECT COUNT(*) c FROM orders").get().c,
   });
 });
 

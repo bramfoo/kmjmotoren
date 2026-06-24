@@ -22,6 +22,7 @@
         <a class="product-link" href="product.html?id=${p.id}">
           <div class="product-media">
             ${img}
+            ${p.reserved ? `<span class="reserved-ribbon">Gereserveerd</span>` : ""}
             ${count > 1 ? `<span class="photo-count">&#128247; ${count}</span>` : ""}
           </div>
           <div class="product-body">

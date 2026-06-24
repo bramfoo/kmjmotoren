@@ -46,6 +46,49 @@
     </div>
   </footer>
 
+  <!-- BUY MODAL -->
+  <div class="admin-modal buy-modal" id="buy-modal">
+    <div class="admin-modal-box">
+      <button class="admin-modal-close" id="buy-close" type="button" aria-label="Sluiten">&times;</button>
+      <div id="buy-form-wrap">
+        <h3>Product kopen</h3>
+        <p class="buy-intro">Vul uw gegevens in. Wij nemen daarna contact met u op om de aankoop af te ronden.</p>
+        <form class="buy-form" id="buy-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="buy-voornaam">Voornaam *</label>
+              <input type="text" id="buy-voornaam" required />
+            </div>
+            <div class="form-group">
+              <label for="buy-achternaam">Achternaam *</label>
+              <input type="text" id="buy-achternaam" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="buy-adres">Adres *</label>
+            <input type="text" id="buy-adres" placeholder="Straat, huisnummer, postcode, plaats" required />
+          </div>
+          <div class="form-group">
+            <label for="buy-email">E-mail *</label>
+            <input type="email" id="buy-email" required />
+          </div>
+          <div class="form-group">
+            <label for="buy-telefoon">Telefoon *</label>
+            <input type="tel" id="buy-telefoon" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Bevestigen</button>
+          <p class="form-notice" id="buy-msg" aria-live="polite"></p>
+        </form>
+      </div>
+      <div id="buy-success" class="buy-success" hidden>
+        <div class="buy-check">&#10003;</div>
+        <h3>Bedankt voor uw aankoop!</h3>
+        <p>We nemen zo snel mogelijk contact met u op.</p>
+        <button class="btn btn-primary" id="buy-success-close" type="button">Sluiten</button>
+      </div>
+    </div>
+  </div>
+
   <script src="config.js"></script>
   <script src="app.js"></script>
   <script src="product.js"></script>

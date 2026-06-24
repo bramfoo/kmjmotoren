@@ -43,6 +43,7 @@
         ${p.description
           ? `<div class="detail-desc">${escapeHtml(p.description)}</div>`
           : `<p class="detail-desc detail-desc-empty">Geen beschrijving beschikbaar.</p>`}
+        <div class="detail-buy" id="detail-buy">${buyControl(p)}</div>
       </div>`;
 
     // Thumbnail → main image switching
@@ -54,6 +55,15 @@
         btn.classList.add("active");
       });
     });
+
+    const openBtn = document.getElementById("buy-open");
+    if (openBtn) openBtn.addEventListener("click", openBuyModal);
+  }
+
+  function buyControl(p) {
+    return p.reserved
+      ? `<span class="reserved-badge">&#9679; Gereserveerd</span>`
+      : `<button class="btn btn-primary btn-buy" id="buy-open" type="button">Kopen</button>`;
   }
 
   async function load() {
@@ -66,5 +76,59 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", load);
+  // ── Buy modal ───────────────────────────────────────────────────────
+  function val(elId) { return document.getElementById(elId).value.trim(); }
+
+  function openBuyModal() {
+    document.getElementById("buy-form-wrap").hidden = false;
+    document.getElementById("buy-success").hidden = true;
+    document.getElementById("buy-msg").textContent = "";
+    document.getElementById("buy-modal").classList.add("open");
+  }
+  function closeBuyModal() {
+    document.getElementById("buy-modal").classList.remove("open");
+  }
+
+  function setupBuy() {
+    const modal = document.getElementById("buy-modal");
+    if (!modal) return;
+    document.getElementById("buy-close").addEventListener("click", closeBuyModal);
+    document.getElementById("buy-success-close").addEventListener("click", closeBuyModal);
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeBuyModal(); });
+
+    document.getElementById("buy-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("buy-msg");
+      const payload = {
+        product_id: id,
+        voornaam: val("buy-voornaam"),
+        achternaam: val("buy-achternaam"),
+        adres: val("buy-adres"),
+        email: val("buy-email"),
+        telefoon: val("buy-telefoon"),
+      };
+      if (!payload.voornaam || !payload.achternaam || !payload.adres || !payload.email || !payload.telefoon) {
+        msg.textContent = "Vul alle velden in.";
+        msg.className = "form-notice error";
+        return;
+      }
+      msg.textContent = "Bezig met verzenden…";
+      msg.className = "form-notice";
+      try {
+        await KMJ.send("/api/orders", "POST", payload);
+        document.getElementById("buy-form-wrap").hidden = true;
+        document.getElementById("buy-success").hidden = false;
+        const buyArea = document.getElementById("detail-buy");
+        if (buyArea) buyArea.innerHTML = '<span class="reserved-badge">&#9679; Gereserveerd</span>';
+      } catch (err) {
+        msg.textContent = "Verzenden mislukt: " + err.message;
+        msg.className = "form-notice error";
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    setupBuy();
+    load();
+  });
 })();

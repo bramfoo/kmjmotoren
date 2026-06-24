@@ -54,12 +54,27 @@ db.exec(`
     created_at  TEXT NOT NULL DEFAULT (datetime('now')),
     path        TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS orders (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+    product_id   INTEGER,
+    product_name TEXT,
+    voornaam     TEXT NOT NULL,
+    achternaam   TEXT NOT NULL,
+    adres        TEXT NOT NULL,
+    email        TEXT NOT NULL,
+    telefoon     TEXT NOT NULL
+  );
 `);
 
 // Migration: products gained an `images` column (JSON array of photo URLs).
 const productCols = db.prepare("PRAGMA table_info(products)").all().map((c) => c.name);
 if (!productCols.includes("images")) {
   db.exec("ALTER TABLE products ADD COLUMN images TEXT");
+}
+if (!productCols.includes("reserved")) {
+  db.exec("ALTER TABLE products ADD COLUMN reserved INTEGER NOT NULL DEFAULT 0");
 }
 
 // Migration: requests gained a `deleted` flag (soft-delete / trash bin).

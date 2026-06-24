@@ -29,6 +29,7 @@
       ["Paginaweergaven", s.totalViews],
       ["Weergaven (7 dgn)", s.views7],
       ["Aanvragen", s.requests.total],
+      ["Bestellingen", s.orders],
       ["Producten", s.products],
       ["Galerij", s.gallery],
     ].map(([label, val]) =>
@@ -92,7 +93,7 @@
   }
 
   function bindRequestEvents() {
-    document.querySelectorAll(".request-card").forEach((card) => {
+    document.querySelectorAll("#requests-list .request-card").forEach((card) => {
       const id = card.dataset.id;
 
       // Status change → save immediately
@@ -186,11 +187,73 @@
     });
   }
 
+  // ── Orders (purchases) ──────────────────────────────────────────────
+  function orderCard(o) {
+    return `
+      <div class="request-card order-card" data-id="${o.id}" data-product="${o.product_id || ""}">
+        <div class="request-head">
+          <div class="request-who">
+            <strong>${escapeHtml(o.voornaam + " " + o.achternaam)}</strong>
+            <span class="request-date">${fmtDate(o.created_at)}</span>
+          </div>
+          <span class="order-product">${escapeHtml(o.product_name || "—")}</span>
+        </div>
+        <p class="request-contact">
+          <a href="mailto:${escapeHtml(o.email)}">${escapeHtml(o.email)}</a>
+          &middot; <a href="tel:${escapeHtml(o.telefoon)}">${escapeHtml(o.telefoon)}</a>
+        </p>
+        <p class="request-line"><strong>Adres:</strong> ${escapeHtml(o.adres)}</p>
+        <div class="request-actions">
+          ${o.product_id ? `<button class="btn btn-sm btn-primary order-release" type="button">Reservering opheffen</button>` : ""}
+          <button class="request-delete order-delete" type="button">Bestelling verwijderen</button>
+        </div>
+      </div>`;
+  }
+
+  async function loadOrders() {
+    const list = await KMJ.get("/api/orders");
+    const wrap = document.getElementById("orders-list");
+    const empty = document.getElementById("orders-empty");
+    wrap.innerHTML = list.map(orderCard).join("");
+    empty.hidden = list.length > 0;
+    bindOrderEvents();
+  }
+
+  function bindOrderEvents() {
+    document.querySelectorAll("#orders-list .order-card").forEach((card) => {
+      const id = card.dataset.id;
+      const productId = card.dataset.product;
+      const releaseBtn = card.querySelector(".order-release");
+      if (releaseBtn) {
+        releaseBtn.addEventListener("click", async () => {
+          try {
+            await KMJ.send("/api/products/" + productId, "PATCH", { reserved: 0 });
+            releaseBtn.textContent = "Weer beschikbaar ✓";
+            releaseBtn.disabled = true;
+          } catch (err) {
+            alert("Mislukt: " + err.message);
+          }
+        });
+      }
+      card.querySelector(".order-delete").addEventListener("click", async () => {
+        if (!confirm("Deze bestelling verwijderen?")) return;
+        try {
+          await KMJ.send("/api/orders/" + id, "DELETE");
+          loadOrders();
+          loadStats();
+        } catch (err) {
+          alert("Verwijderen mislukt: " + err.message);
+        }
+      });
+    });
+  }
+
   async function loadAll() {
     try {
       await loadStats();
       await loadRequests();
       await loadTrash();
+      await loadOrders();
     } catch (err) {
       dash.innerHTML = '<p class="empty-state">Kon dashboard niet laden.</p>';
     }
