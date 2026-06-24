@@ -15,7 +15,7 @@
   <!-- NAV -->
   <header class="navbar">
     <div class="container nav-inner">
-      <a href="#" class="logo">KMJ <span>Motoren</span></a>
+      <a href="#" class="logo"><img class="logo-img" src="assets/logo.png" alt="KMJ Motoren" /></a>
       <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -112,7 +112,7 @@
         </div>
 
         <div class="dienst-card">
-          <div class="dienst-icon">&#128137;</div>
+          <div class="dienst-icon">&#128734;</div>
           <h3>Banden &amp; Remmen</h3>
           <p>Bandenmontage, uitbalanceren en remservice voor optimale veiligheid.</p>
         </div>
@@ -121,6 +121,12 @@
           <div class="dienst-icon">&#9889;</div>
           <h3>Elektrische Systemen</h3>
           <p>Accu, lichtinstallatie, startmotor en alle andere elektrische componenten.</p>
+        </div>
+
+        <div class="dienst-card">
+          <div class="dienst-icon">&#129533;</div>
+          <h3>Schoonmaak beurt</h3>
+          <p>Grondige reiniging en poetsbeurt zodat uw scooter of motor er weer als nieuw uitziet.</p>
         </div>
 
       </div>
@@ -209,6 +215,23 @@
             <input type="text" id="voertuig" name="voertuig" placeholder="Merk, model en bouwjaar" />
           </div>
           <div class="form-group">
+            <label>Welke service(s)? (optioneel)</label>
+            <div class="service-select" id="service-select">
+              <button type="button" class="service-toggle" id="service-toggle" aria-expanded="false">
+                <span id="service-toggle-label">Kies service(s)</span>
+                <span class="service-caret">&#9662;</span>
+              </button>
+              <div class="service-menu" id="service-menu">
+                <label><input type="checkbox" name="service" value="Onderhoud &amp; Beurt" /> Onderhoud &amp; Beurt</label>
+                <label><input type="checkbox" name="service" value="Diagnose &amp; Reparatie" /> Diagnose &amp; Reparatie</label>
+                <label><input type="checkbox" name="service" value="Motor Revisie" /> Motor Revisie</label>
+                <label><input type="checkbox" name="service" value="Banden &amp; Remmen" /> Banden &amp; Remmen</label>
+                <label><input type="checkbox" name="service" value="Elektrische Systemen" /> Elektrische Systemen</label>
+                <label><input type="checkbox" name="service" value="Schoonmaak beurt" /> Schoonmaak beurt</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
             <label for="bericht">Bericht *</label>
             <textarea id="bericht" name="bericht" rows="4" placeholder="Beschrijf uw vraag of klacht..." required></textarea>
           </div>
@@ -240,7 +263,7 @@
   <!-- FOOTER -->
   <footer class="footer">
     <div class="container footer-inner">
-      <p class="footer-logo">KMJ <span>Motoren</span></p>
+      <img class="footer-logo-img" src="assets/logo.png" alt="KMJ Motoren" />
       <p>&copy; 2026 KMJ Motoren – Alle rechten voorbehouden</p>
     </div>
   </footer>

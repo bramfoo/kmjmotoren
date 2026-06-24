@@ -4,13 +4,15 @@
 [hidden] { display: none !important; }
 
 :root {
-  --orange: #e85d04;
-  --orange-dark: #c94d00;
-  --dark: #1a1a2e;
-  --dark-2: #16213e;
-  --text: #333;
-  --text-light: #666;
-  --bg: #f8f9fa;
+  /* Black & white theme. --orange kept as the variable name but now the
+     near-black "accent" used on light backgrounds (prices, buttons, etc.) */
+  --orange: #1a1a1a;
+  --orange-dark: #000;
+  --dark: #0a0a0a;
+  --dark-2: #1c1c1c;
+  --text: #1a1a1a;
+  --text-light: #6b6b6b;
+  --bg: #f4f4f4;
   --white: #fff;
   --radius: 12px;
   --shadow: 0 4px 24px rgba(0,0,0,0.08);
@@ -45,7 +47,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: 72px;
 }
 
 .logo {
@@ -137,7 +139,7 @@ body {
 
 /* ── HERO ── */
 .hero {
-  background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 60%, #0f3460 100%);
+  background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 60%, #2b2b2b 100%);
   color: var(--white);
   padding: 5rem 0 3rem;
   position: relative;
@@ -534,7 +536,7 @@ body {
   .nav-links {
     display: none;
     position: absolute;
-    top: 64px;
+    top: 72px;
     left: 0;
     right: 0;
     background: var(--white);
@@ -843,5 +845,127 @@ body.is-admin .item-delete.admin-only { display: flex; }
   .product-grid,
   .gallery-grid { grid-template-columns: 1fr; }
   .socials-grid { grid-template-columns: 1fr; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BLACK & WHITE THEME – logo image + dark-background overrides
+   ════════════════════════════════════════════════════════════════ */
+
+/* Logo image (replaces the old text logo) */
+.logo-img { height: 58px; width: auto; display: block; }
+.footer-logo-img { height: 40px; width: auto; display: block; }
+
+/* Navbar → black with white links */
+.navbar { background: var(--dark); }
+.nav-links a { color: rgba(255,255,255,0.85); }
+.nav-links a:hover { color: var(--white); }
+.nav-toggle span { background: var(--white); }
+.btn-nav { background: var(--white); color: var(--dark) !important; border-color: var(--white); }
+.btn-nav:hover { background: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.85); }
+
+/* Neutral (non-coloured) button shadow */
+.btn-primary:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+
+/* Primary buttons on dark sections → white on black */
+.hero .btn-primary,
+.contact .btn-primary,
+.subpage-head .btn-primary {
+  background: var(--white);
+  color: var(--dark);
+  border-color: var(--white);
+}
+.hero .btn-primary:hover,
+.contact .btn-primary:hover,
+.subpage-head .btn-primary:hover {
+  background: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.85);
+  color: var(--dark);
+}
+
+/* Hero badge + stat numbers → white accents on dark */
+.badge-circle { border-color: rgba(255,255,255,0.85); }
+.badge-years { color: var(--white); }
+.stat-num { color: var(--white); }
+
+/* Contact (dark) link + input focus → white */
+.contact-item a:hover { color: var(--white); }
+.contact .form-group input:focus,
+.contact .form-group textarea:focus { border-color: var(--white); }
+
+/* Back link hover on dark header */
+.back-link:hover { color: var(--white); }
+
+/* Footer → pure black; admin button active state stays visible */
+.footer { background: #000; }
+.beheer-btn.active { background: var(--white); border-color: var(--white); color: var(--dark); }
+
+/* Delete buttons → black instead of red */
+.item-delete { background: rgba(0,0,0,0.75); }
+.item-delete:hover { background: #000; }
+
+/* (Icons & social logos keep their colour for contrast against the B&W theme) */
+
+/* Mobile nav dropdown → black */
+@media (max-width: 680px) {
+  .nav-links { background: var(--dark); }
+}
+
+/* ── Service multi-select (contact form, dark background) ── */
+.service-select { position: relative; }
+.service-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+.service-toggle:hover { border-color: rgba(255,255,255,0.4); }
+.service-select.open .service-toggle {
+  border-color: var(--white);
+  background: rgba(255,255,255,0.12);
+}
+.service-caret { transition: transform var(--transition); }
+.service-select.open .service-caret { transform: rotate(180deg); }
+
+.service-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--dark-2);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 0.4rem;
+  z-index: 20;
+  flex-direction: column;
+  gap: 0.15rem;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+}
+.service-select.open .service-menu { display: flex; }
+.service-menu label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.service-menu label:hover { background: rgba(255,255,255,0.08); }
+.service-menu input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--white);
+  cursor: pointer;
 }
 
