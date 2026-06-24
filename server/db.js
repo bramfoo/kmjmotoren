@@ -37,6 +37,12 @@ db.exec(`
   );
 `);
 
+// Migration: products gained an `images` column (JSON array of photo URLs).
+const productCols = db.prepare("PRAGMA table_info(products)").all().map((c) => c.name);
+if (!productCols.includes("images")) {
+  db.exec("ALTER TABLE products ADD COLUMN images TEXT");
+}
+
 // Persistent session secret (env overrides; otherwise generated + stored once).
 function getSessionSecret() {
   if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;

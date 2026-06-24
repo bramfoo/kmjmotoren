@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product – KMJ Motoren</title>
+  <meta name="description" content="Productdetails bij KMJ Motoren." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo"><img class="logo-img" src="assets/logo.png" alt="KMJ Motoren" /></a>
+      <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html#diensten">Diensten</a>
+        <a href="index.html#over-ons">Over ons</a>
+        <a href="producten.html">Producten</a>
+        <a href="socials.html">Socials</a>
+        <a href="index.html#contact" class="btn btn-nav">Afspraak maken</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="subpage">
+    <div class="container">
+      <a href="producten.html" class="back-link">&#8592; Terug naar producten</a>
+      <div id="product-detail" class="product-detail"></div>
+      <p id="product-detail-msg" class="empty-state" hidden></p>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <img class="footer-logo-img" src="assets/logo.png" alt="KMJ Motoren" />
+      <p>&copy; 2026 KMJ Motoren – Alle rechten voorbehouden</p>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script src="product.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

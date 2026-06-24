@@ -51,8 +51,8 @@
               <input type="text" id="product-name" placeholder="Bijv. Vespa Primavera 50" required />
             </div>
             <div class="form-group">
-              <label for="product-price">Prijs</label>
-              <input type="text" id="product-price" placeholder="Bijv. € 2.450" />
+              <label for="product-price">Prijs (&euro;)</label>
+              <input type="number" id="product-price" min="0" step="0.01" placeholder="Bijv. 2450" />
             </div>
           </div>
           <div class="form-group">
@@ -60,8 +60,8 @@
             <textarea id="product-desc" rows="3" placeholder="Bouwjaar, kilometerstand, staat…"></textarea>
           </div>
           <div class="form-group">
-            <label for="product-image">Foto</label>
-            <input type="file" id="product-image" accept="image/*" />
+            <label for="product-image">Foto's (meerdere mogelijk)</label>
+            <input type="file" id="product-image" accept="image/*" multiple />
           </div>
           <button type="submit" class="btn btn-primary">Product opslaan</button>
           <p class="form-notice" id="product-form-msg" aria-live="polite"></p>

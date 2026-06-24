@@ -10,6 +10,24 @@
     isAdmin: false,
     _adminCallbacks: [],
 
+    // Format a value as euros (nl-NL). Falls back to the raw text if it
+    // isn't a parseable number.
+    euro(value) {
+      if (value === null || value === undefined || value === "") return "";
+      let n = Number(value);
+      if (isNaN(n)) {
+        const cleaned = String(value).replace(/[^\d.,]/g, "").replace(/\./g, "").replace(",", ".");
+        n = Number(cleaned);
+      }
+      if (isNaN(n)) return String(value);
+      return new Intl.NumberFormat("nl-NL", {
+        style: "currency",
+        currency: "EUR",
+        minimumFractionDigits: Number.isInteger(n) ? 0 : 2,
+        maximumFractionDigits: 2,
+      }).format(n);
+    },
+
     onAdminChange(fn) {
       this._adminCallbacks.push(fn);
       fn(this.isAdmin);

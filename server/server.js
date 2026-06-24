@@ -108,26 +108,48 @@ app.get("/api/me", (req, res) => {
 });
 
 // ── Products ────────────────────────────────────────────────────────
+// Parse the stored images JSON into an array (falling back to image_url).
+function withImages(row) {
+  if (!row) return row;
+  let imgs = [];
+  if (row.images) { try { imgs = JSON.parse(row.images); } catch { imgs = []; } }
+  if (!imgs.length && row.image_url) imgs = [row.image_url];
+  row.images = imgs;
+  return row;
+}
+
 app.get("/api/products", (_req, res) => {
   const rows = db.prepare("SELECT * FROM products ORDER BY created_at DESC, id DESC").all();
-  res.json(rows);
+  res.json(rows.map(withImages));
 });
 
-app.post("/api/products", requireAuth, upload.single("image"), (req, res) => {
+app.get("/api/products/:id", (req, res) => {
+  const row = db.prepare("SELECT * FROM products WHERE id = ?").get(req.params.id);
+  if (!row) return res.status(404).json({ error: "Niet gevonden." });
+  res.json(withImages(row));
+});
+
+app.post("/api/products", requireAuth, upload.array("images", 12), (req, res) => {
   const name = (req.body.name || "").trim();
   if (!name) return res.status(400).json({ error: "Naam is verplicht." });
-  const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+  const urls = (req.files || []).map((f) => `/uploads/${f.filename}`);
   const info = db
-    .prepare("INSERT INTO products (name, price, description, image_url) VALUES (?, ?, ?, ?)")
-    .run(name, (req.body.price || "").trim() || null, (req.body.description || "").trim() || null, image_url);
-  res.status(201).json(db.prepare("SELECT * FROM products WHERE id = ?").get(info.lastInsertRowid));
+    .prepare("INSERT INTO products (name, price, description, image_url, images) VALUES (?, ?, ?, ?, ?)")
+    .run(
+      name,
+      (req.body.price || "").trim() || null,
+      (req.body.description || "").trim() || null,
+      urls[0] || null,
+      JSON.stringify(urls)
+    );
+  res.status(201).json(withImages(db.prepare("SELECT * FROM products WHERE id = ?").get(info.lastInsertRowid)));
 });
 
 app.delete("/api/products/:id", requireAuth, (req, res) => {
   const row = db.prepare("SELECT * FROM products WHERE id = ?").get(req.params.id);
   if (!row) return res.status(404).json({ error: "Niet gevonden." });
   db.prepare("DELETE FROM products WHERE id = ?").run(req.params.id);
-  removeLocalFile(row.image_url);
+  withImages(row).images.forEach(removeLocalFile);
   res.json({ ok: true });
 });
 

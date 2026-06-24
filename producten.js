@@ -12,17 +12,24 @@
   }
 
   function card(p) {
-    const img = p.image_url
-      ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy" />`
+    const thumb = (p.images && p.images[0]) || p.image_url;
+    const count = (p.images && p.images.length) || 0;
+    const img = thumb
+      ? `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(p.name)}" loading="lazy" />`
       : `<div class="product-noimg">&#128247;</div>`;
     return `
       <article class="product-card" data-id="${p.id}">
-        <div class="product-media">${img}</div>
-        <div class="product-body">
-          <h3>${escapeHtml(p.name)}</h3>
-          ${p.price ? `<p class="product-price">${escapeHtml(p.price)}</p>` : ""}
-          ${p.description ? `<p class="product-desc">${escapeHtml(p.description)}</p>` : ""}
-        </div>
+        <a class="product-link" href="product.html?id=${p.id}">
+          <div class="product-media">
+            ${img}
+            ${count > 1 ? `<span class="photo-count">&#128247; ${count}</span>` : ""}
+          </div>
+          <div class="product-body">
+            <h3>${escapeHtml(p.name)}</h3>
+            ${p.price ? `<p class="product-price">${escapeHtml(KMJ.euro(p.price))}</p>` : ""}
+            ${p.description ? `<p class="product-desc">${escapeHtml(p.description)}</p>` : ""}
+          </div>
+        </a>
         <button class="item-delete admin-only" type="button" title="Verwijderen" data-id="${p.id}">&times;</button>
       </article>`;
   }
@@ -64,8 +71,8 @@
         fd.append("name", form.querySelector("#product-name").value.trim());
         fd.append("price", form.querySelector("#product-price").value.trim());
         fd.append("description", form.querySelector("#product-desc").value.trim());
-        const file = form.querySelector("#product-image").files[0];
-        if (file) fd.append("image", file);
+        const files = form.querySelector("#product-image").files;
+        for (const f of files) fd.append("images", f);
         await KMJ.send("/api/products", "POST", fd);
         msg.textContent = "Product toegevoegd!";
         msg.className = "form-notice success";
