@@ -189,6 +189,82 @@ app.delete("/api/gallery/:id", requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
+// ── Contact requests ────────────────────────────────────────────────
+app.post("/api/requests", (req, res) => {
+  const b = req.body || {};
+  const naam = (b.naam || "").trim();
+  const email = (b.email || "").trim();
+  const bericht = (b.bericht || "").trim();
+  if (!naam || !email || !bericht) {
+    return res.status(400).json({ error: "Naam, e-mail en bericht zijn verplicht." });
+  }
+  const services = Array.isArray(b.services) ? b.services.join(", ") : (b.services || "");
+  db.prepare(
+    "INSERT INTO requests (naam, email, telefoon, voertuig, services, bericht) VALUES (?, ?, ?, ?, ?, ?)"
+  ).run(naam, email, (b.telefoon || "").trim() || null, (b.voertuig || "").trim() || null, services || null, bericht);
+  res.status(201).json({ ok: true });
+});
+
+app.get("/api/requests", requireAuth, (_req, res) => {
+  res.json(db.prepare("SELECT * FROM requests ORDER BY created_at DESC, id DESC").all());
+});
+
+app.patch("/api/requests/:id", requireAuth, (req, res) => {
+  const row = db.prepare("SELECT * FROM requests WHERE id = ?").get(req.params.id);
+  if (!row) return res.status(404).json({ error: "Niet gevonden." });
+  const status = req.body.status !== undefined ? req.body.status : row.status;
+  const notes = req.body.notes !== undefined ? req.body.notes : row.notes;
+  db.prepare("UPDATE requests SET status = ?, notes = ? WHERE id = ?").run(status, notes, req.params.id);
+  res.json(db.prepare("SELECT * FROM requests WHERE id = ?").get(req.params.id));
+});
+
+app.delete("/api/requests/:id", requireAuth, (req, res) => {
+  db.prepare("DELETE FROM requests WHERE id = ?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+// ── Analytics ───────────────────────────────────────────────────────
+app.post("/api/track", (req, res) => {
+  const path = (req.body && req.body.path ? String(req.body.path) : "").slice(0, 300);
+  if (path) db.prepare("INSERT INTO pageviews (path) VALUES (?)").run(path);
+  res.json({ ok: true });
+});
+
+app.get("/api/stats", requireAuth, (_req, res) => {
+  const totalViews = db.prepare("SELECT COUNT(*) c FROM pageviews").get().c;
+  const views7 = db.prepare("SELECT COUNT(*) c FROM pageviews WHERE created_at >= datetime('now','-7 days')").get().c;
+  const topPages = db
+    .prepare("SELECT path, COUNT(*) c FROM pageviews GROUP BY path ORDER BY c DESC LIMIT 6")
+    .all();
+
+  // Views per day for the last 14 days (fill gaps with 0)
+  const rows = db
+    .prepare("SELECT date(created_at) day, COUNT(*) c FROM pageviews WHERE created_at >= datetime('now','-13 days') GROUP BY day")
+    .all();
+  const byDayMap = Object.fromEntries(rows.map((r) => [r.day, r.c]));
+  const viewsByDay = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+    viewsByDay.push({ day: d, count: byDayMap[d] || 0 });
+  }
+
+  const statusRows = db.prepare("SELECT status, COUNT(*) c FROM requests GROUP BY status").all();
+  const byStatus = Object.fromEntries(statusRows.map((r) => [r.status, r.c]));
+
+  res.json({
+    totalViews,
+    views7,
+    viewsByDay,
+    topPages,
+    requests: {
+      total: db.prepare("SELECT COUNT(*) c FROM requests").get().c,
+      byStatus,
+    },
+    products: db.prepare("SELECT COUNT(*) c FROM products").get().c,
+    gallery: db.prepare("SELECT COUNT(*) c FROM gallery").get().c,
+  });
+});
+
 // ── Static files ────────────────────────────────────────────────────
 // Never expose server internals / VCS / editor dirs.
 app.use((req, res, next) => {

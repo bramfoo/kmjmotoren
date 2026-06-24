@@ -145,5 +145,14 @@
     KMJ.get("/api/me")
       .then((d) => KMJ._setAdmin(!!d.admin))
       .catch(() => {});
+
+    // First-party page-view tracking (skip the admin dashboard itself).
+    if (!location.pathname.endsWith("beheer.html")) {
+      fetch(API + "/api/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: location.pathname }),
+      }).catch(() => {});
+    }
   });
 })();

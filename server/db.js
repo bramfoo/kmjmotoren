@@ -35,6 +35,25 @@ db.exec(`
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS requests (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+    naam        TEXT NOT NULL,
+    email       TEXT NOT NULL,
+    telefoon    TEXT,
+    voertuig    TEXT,
+    services    TEXT,
+    bericht     TEXT NOT NULL,
+    status      TEXT NOT NULL DEFAULT 'Nieuw',
+    notes       TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS pageviews (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+    path        TEXT NOT NULL
+  );
 `);
 
 // Migration: products gained an `images` column (JSON array of photo URLs).

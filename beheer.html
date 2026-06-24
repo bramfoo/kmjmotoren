@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Product – KMJ Motoren</title>
-  <meta name="description" content="Productdetails bij KMJ Motoren." />
+  <title>Dashboard – KMJ Motoren</title>
+  <meta name="robots" content="noindex" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
@@ -30,11 +30,44 @@
     </div>
   </header>
 
+  <!-- PAGE HEADER -->
+  <section class="subpage-head">
+    <div class="container">
+      <a href="index.html" class="back-link">&#8592; Terug naar home</a>
+      <h1 class="section-title light">Beheer dashboard</h1>
+      <p class="section-sub light">Statistieken en binnengekomen aanvragen.</p>
+    </div>
+  </section>
+
   <main class="subpage">
     <div class="container">
-      <a href="producten.html" class="back-link">&#8592; Terug naar producten</a>
-      <div id="product-detail" class="product-detail"></div>
-      <p id="product-detail-msg" class="empty-state" hidden></p>
+
+      <!-- shown when NOT logged in -->
+      <div id="beheer-locked" class="empty-state" hidden>
+        Log in via de <strong>Beheer</strong>-knop rechtsonder om dit dashboard te bekijken.
+      </div>
+
+      <!-- dashboard (admin only) -->
+      <div id="beheer-dash" hidden>
+        <h2 class="section-title">Statistieken</h2>
+        <div id="stats-cards" class="stats-grid"></div>
+
+        <div class="stats-row">
+          <div class="stats-panel">
+            <h3>Paginaweergaven (14 dagen)</h3>
+            <div id="views-chart" class="views-chart"></div>
+          </div>
+          <div class="stats-panel">
+            <h3>Top pagina's</h3>
+            <ul id="top-pages" class="top-pages"></ul>
+          </div>
+        </div>
+
+        <h2 class="section-title dash-requests-title">Aanvragen</h2>
+        <div id="requests-list" class="requests-list"></div>
+        <p id="requests-empty" class="empty-state" hidden>Nog geen aanvragen.</p>
+      </div>
+
     </div>
   </main>
 
@@ -48,7 +81,7 @@
 
   <script src="config.js"></script>
   <script src="app.js"></script>
-  <script src="product.js"></script>
+  <script src="beheer.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

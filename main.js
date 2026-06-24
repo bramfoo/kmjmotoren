@@ -57,12 +57,34 @@ if (contactForm) contactForm.addEventListener('submit', function (e) {
     return;
   }
 
-  // Placeholder – replace with real form submission (e.g. Formspree, EmailJS)
   const services = [...this.querySelectorAll('input[name="service"]:checked')].map(b => b.value);
-  const extra = services.length ? ' Gekozen service(s): ' + services.join(', ') + '.' : '';
-  notice.textContent = 'Bedankt! Uw bericht is verzonden.' + extra + ' We nemen zo snel mogelijk contact op.';
-  notice.className = 'form-notice success';
-  this.reset();
-  const svcLabel = document.getElementById('service-toggle-label');
-  if (svcLabel) svcLabel.textContent = 'Kies service(s)';
+  const payload = {
+    naam,
+    email,
+    telefoon: this.telefoon.value.trim(),
+    voertuig: this.voertuig.value.trim(),
+    bericht,
+    services,
+  };
+
+  notice.textContent = 'Bezig met verzenden…';
+  notice.className = 'form-notice';
+  const form = this;
+  fetch('/api/requests', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(() => {
+      notice.textContent = 'Bedankt! Uw aanvraag is verzonden. We nemen zo snel mogelijk contact op.';
+      notice.className = 'form-notice success';
+      form.reset();
+      const svcLabel = document.getElementById('service-toggle-label');
+      if (svcLabel) svcLabel.textContent = 'Kies service(s)';
+    })
+    .catch(() => {
+      notice.textContent = 'Verzenden mislukt. Probeer het later opnieuw of bel ons.';
+      notice.className = 'form-notice error';
+    });
 });
