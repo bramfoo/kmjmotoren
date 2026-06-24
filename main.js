@@ -2,21 +2,24 @@
 const toggle = document.querySelector('.nav-toggle');
 const navLinks = document.getElementById('nav-links');
 
-toggle.addEventListener('click', () => {
-  const open = navLinks.classList.toggle('open');
-  toggle.setAttribute('aria-expanded', open);
-});
-
-// Close nav on link click (mobile)
-navLinks.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    navLinks.classList.remove('open');
-    toggle.setAttribute('aria-expanded', false);
+if (toggle && navLinks) {
+  toggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open);
   });
-});
+
+  // Close nav on link click (mobile)
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      toggle.setAttribute('aria-expanded', false);
+    });
+  });
+}
 
 // Contact form – client-side feedback (no backend)
-document.getElementById('contact-form').addEventListener('submit', function (e) {
+const contactForm = document.getElementById('contact-form');
+if (contactForm) contactForm.addEventListener('submit', function (e) {
   e.preventDefault();
   const notice = document.getElementById('form-notice');
   const naam = this.naam.value.trim();

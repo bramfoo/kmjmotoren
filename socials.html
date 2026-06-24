@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Socials – KMJ Motoren</title>
+  <meta name="description" content="Volg KMJ Motoren op YouTube, TikTok en Instagram en bekijk onze video's en foto's." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">KMJ <span>Motoren</span></a>
+      <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html#diensten">Diensten</a>
+        <a href="index.html#over-ons">Over ons</a>
+        <a href="producten.html">Producten</a>
+        <a href="socials.html">Socials</a>
+        <a href="index.html#contact" class="btn btn-nav">Afspraak maken</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- PAGE HEADER -->
+  <section class="subpage-head">
+    <div class="container">
+      <a href="index.html" class="back-link">&#8592; Terug naar home</a>
+      <h1 class="section-title light">Volg ons</h1>
+      <p class="section-sub light">Bekijk onze laatste video's en foto's op social media.</p>
+    </div>
+  </section>
+
+  <main class="subpage">
+    <div class="container">
+
+      <!-- SOCIAL LINKS -->
+      <div class="socials-grid">
+        <a class="social-card yt" href="https://www.youtube.com/@KMJ.motoren" target="_blank" rel="noopener noreferrer">
+          <span class="social-logo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><path fill="#fff" d="M9.5 15.5v-7l6 3.5z"/></svg>
+          </span>
+          <span class="social-name">YouTube</span>
+          <span class="social-handle">@KMJ.motoren</span>
+        </a>
+
+        <a class="social-card tt" href="https://www.tiktok.com/@kmj.motoren" target="_blank" rel="noopener noreferrer">
+          <span class="social-logo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#010101" d="M16.6 5.82a4.28 4.28 0 0 1-1.05-2.82h-3.1v12.6a2.6 2.6 0 1 1-2.6-2.6c.28 0 .55.04.8.12V9.9a5.78 5.78 0 0 0-.8-.06 5.7 5.7 0 1 0 5.7 5.7V9.01a7.3 7.3 0 0 0 4.3 1.38V7.28a4.28 4.28 0 0 1-3.25-1.46z"/></svg>
+          </span>
+          <span class="social-name">TikTok</span>
+          <span class="social-handle">@kmj.motoren</span>
+        </a>
+
+        <a class="social-card ig" href="https://www.instagram.com/kmj.engines" target="_blank" rel="noopener noreferrer">
+          <span class="social-logo">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0" stop-color="#feda75"/><stop offset=".25" stop-color="#fa7e1e"/>
+                <stop offset=".5" stop-color="#d62976"/><stop offset=".75" stop-color="#962fbf"/>
+                <stop offset="1" stop-color="#4f5bd5"/>
+              </linearGradient></defs>
+              <rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="url(#ig)" stroke-width="2"/>
+              <circle cx="12" cy="12" r="4.3" fill="none" stroke="url(#ig)" stroke-width="2"/>
+              <circle cx="17.6" cy="6.4" r="1.3" fill="url(#ig)"/>
+            </svg>
+          </span>
+          <span class="social-name">Instagram</span>
+          <span class="social-handle">@kmj.engines</span>
+        </a>
+      </div>
+
+      <!-- GALLERY -->
+      <h2 class="section-title gallery-title">Galerij</h2>
+      <p class="section-sub">Onze korte video's en foto's, verzameld op één plek.</p>
+
+      <!-- ADMIN: add media -->
+      <section class="admin-panel admin-only">
+        <h2>Media toevoegen</h2>
+        <form id="gallery-form" class="admin-form" novalidate>
+          <div class="form-group">
+            <label for="gallery-type">Type</label>
+            <select id="gallery-type">
+              <option value="image">Foto uploaden</option>
+              <option value="video">Video uploaden</option>
+              <option value="embed">Link plakken (YouTube / TikTok / Instagram)</option>
+            </select>
+          </div>
+          <div class="form-group" id="gallery-file-row">
+            <label for="gallery-file">Bestand</label>
+            <input type="file" id="gallery-file" accept="image/*" />
+          </div>
+          <div class="form-group" id="gallery-link-row" hidden>
+            <label for="gallery-url">Link</label>
+            <input type="url" id="gallery-url" placeholder="https://www.tiktok.com/@kmj.motoren/video/..." />
+          </div>
+          <div class="form-group">
+            <label for="gallery-caption">Bijschrift (optioneel)</label>
+            <input type="text" id="gallery-caption" placeholder="Korte omschrijving" />
+          </div>
+          <button type="submit" class="btn btn-primary">Toevoegen</button>
+          <p class="form-notice" id="gallery-form-msg" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <div id="gallery-grid" class="gallery-grid"></div>
+      <p id="gallery-empty" class="empty-state" hidden></p>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p class="footer-logo">KMJ <span>Motoren</span></p>
+      <p>&copy; 2026 KMJ Motoren – Alle rechten voorbehouden</p>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script src="socials.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

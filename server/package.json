@@ -1,0 +1,22 @@
+{
+  "name": "kmj-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KMJ Motoren – self-hosted API (Express + better-sqlite3)",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "set-admin": "node set-admin.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^12.2.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.0"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true
+  }
+}
