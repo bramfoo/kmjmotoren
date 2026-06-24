@@ -49,9 +49,10 @@ if (contactForm) contactForm.addEventListener('submit', function (e) {
   const notice = document.getElementById('form-notice');
   const naam = this.naam.value.trim();
   const email = this.email.value.trim();
+  const telefoon = this.telefoon.value.trim();
   const bericht = this.bericht.value.trim();
 
-  if (!naam || !email || !bericht) {
+  if (!naam || !email || !telefoon || !bericht) {
     notice.textContent = 'Vul alle verplichte velden in.';
     notice.className = 'form-notice error';
     return;
@@ -61,7 +62,7 @@ if (contactForm) contactForm.addEventListener('submit', function (e) {
   const payload = {
     naam,
     email,
-    telefoon: this.telefoon.value.trim(),
+    telefoon,
     voertuig: this.voertuig.value.trim(),
     bericht,
     services,

@@ -119,13 +119,66 @@
         }
       });
 
-      // Delete
+      // Delete → moves to trash (soft delete)
       card.querySelector(".request-delete").addEventListener("click", async () => {
-        if (!confirm("Deze aanvraag verwijderen?")) return;
+        if (!confirm("Deze aanvraag naar de prullenbak verplaatsen?")) return;
         try {
           await KMJ.send("/api/requests/" + id, "DELETE");
           loadRequests();
+          loadTrash();
           loadStats();
+        } catch (err) {
+          alert("Verwijderen mislukt: " + err.message);
+        }
+      });
+    });
+  }
+
+  // ── Trash (soft-deleted requests) ───────────────────────────────────
+  function trashCard(r) {
+    return `
+      <div class="trash-card" data-id="${r.id}">
+        <div class="trash-info">
+          <strong>${escapeHtml(r.naam)}</strong>
+          <span class="request-date">${fmtDate(r.created_at)}</span>
+          <p class="request-line">${escapeHtml(r.email)}${r.telefoon ? " &middot; " + escapeHtml(r.telefoon) : ""}</p>
+          <p class="trash-msg">${escapeHtml(r.bericht)}</p>
+        </div>
+        <div class="trash-actions">
+          <button class="btn btn-primary btn-sm trash-restore" type="button">Herstellen</button>
+          <button class="trash-purge" type="button">Definitief verwijderen</button>
+        </div>
+      </div>`;
+  }
+
+  async function loadTrash() {
+    const list = await KMJ.get("/api/requests/trash");
+    document.getElementById("trash-count").textContent = list.length;
+    const wrap = document.getElementById("trash-list");
+    const empty = document.getElementById("trash-empty");
+    wrap.innerHTML = list.map(trashCard).join("");
+    empty.hidden = list.length > 0;
+    bindTrashEvents();
+  }
+
+  function bindTrashEvents() {
+    document.querySelectorAll(".trash-card").forEach((card) => {
+      const id = card.dataset.id;
+      card.querySelector(".trash-restore").addEventListener("click", async () => {
+        try {
+          await KMJ.send("/api/requests/" + id + "/restore", "POST");
+          loadRequests();
+          loadTrash();
+          loadStats();
+        } catch (err) {
+          alert("Herstellen mislukt: " + err.message);
+        }
+      });
+      card.querySelector(".trash-purge").addEventListener("click", async () => {
+        if (!confirm("Definitief verwijderen? Dit kan niet ongedaan worden gemaakt.")) return;
+        try {
+          await KMJ.send("/api/requests/" + id + "/permanent", "DELETE");
+          loadTrash();
         } catch (err) {
           alert("Verwijderen mislukt: " + err.message);
         }
@@ -137,6 +190,7 @@
     try {
       await loadStats();
       await loadRequests();
+      await loadTrash();
     } catch (err) {
       dash.innerHTML = '<p class="empty-state">Kon dashboard niet laden.</p>';
     }

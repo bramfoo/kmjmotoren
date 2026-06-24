@@ -62,6 +62,12 @@ if (!productCols.includes("images")) {
   db.exec("ALTER TABLE products ADD COLUMN images TEXT");
 }
 
+// Migration: requests gained a `deleted` flag (soft-delete / trash bin).
+const requestCols = db.prepare("PRAGMA table_info(requests)").all().map((c) => c.name);
+if (!requestCols.includes("deleted")) {
+  db.exec("ALTER TABLE requests ADD COLUMN deleted INTEGER NOT NULL DEFAULT 0");
+}
+
 // Persistent session secret (env overrides; otherwise generated + stored once).
 function getSessionSecret() {
   if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;

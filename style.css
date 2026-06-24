@@ -1201,6 +1201,44 @@ body.is-admin .nav-links a.admin-only { display: inline-block; }
   text-decoration: underline;
 }
 
+/* Trash bin */
+.trash-section {
+  margin-top: 2rem;
+  background: var(--white);
+  border: 1px solid #e5e5e5;
+  border-radius: var(--radius);
+  padding: 0.5rem 1.3rem;
+}
+.trash-section summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--dark);
+  padding: 0.7rem 0;
+  font-size: 0.95rem;
+}
+.trash-section[open] summary { margin-bottom: 0.8rem; border-bottom: 1px solid #eee; }
+.trash-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+}
+.trash-card:last-child { border-bottom: none; }
+.trash-info strong { color: var(--dark); }
+.trash-msg { font-size: 0.85rem; color: var(--text-light); margin-top: 0.2rem; }
+.trash-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+.trash-purge {
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .stats-row { grid-template-columns: 1fr; }

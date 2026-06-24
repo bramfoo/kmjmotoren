@@ -194,19 +194,36 @@ app.post("/api/requests", (req, res) => {
   const b = req.body || {};
   const naam = (b.naam || "").trim();
   const email = (b.email || "").trim();
+  const telefoon = (b.telefoon || "").trim();
   const bericht = (b.bericht || "").trim();
-  if (!naam || !email || !bericht) {
-    return res.status(400).json({ error: "Naam, e-mail en bericht zijn verplicht." });
+  if (!naam || !email || !telefoon || !bericht) {
+    return res.status(400).json({ error: "Naam, telefoon, e-mail en bericht zijn verplicht." });
   }
   const services = Array.isArray(b.services) ? b.services.join(", ") : (b.services || "");
   db.prepare(
     "INSERT INTO requests (naam, email, telefoon, voertuig, services, bericht) VALUES (?, ?, ?, ?, ?, ?)"
-  ).run(naam, email, (b.telefoon || "").trim() || null, (b.voertuig || "").trim() || null, services || null, bericht);
+  ).run(naam, email, telefoon, (b.voertuig || "").trim() || null, services || null, bericht);
   res.status(201).json({ ok: true });
 });
 
 app.get("/api/requests", requireAuth, (_req, res) => {
-  res.json(db.prepare("SELECT * FROM requests ORDER BY created_at DESC, id DESC").all());
+  res.json(db.prepare("SELECT * FROM requests WHERE deleted = 0 ORDER BY created_at DESC, id DESC").all());
+});
+
+// Trash: soft-deleted requests
+app.get("/api/requests/trash", requireAuth, (_req, res) => {
+  res.json(db.prepare("SELECT * FROM requests WHERE deleted = 1 ORDER BY created_at DESC, id DESC").all());
+});
+
+app.post("/api/requests/:id/restore", requireAuth, (req, res) => {
+  db.prepare("UPDATE requests SET deleted = 0 WHERE id = ?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+// Permanently remove a request (only from the trash)
+app.delete("/api/requests/:id/permanent", requireAuth, (req, res) => {
+  db.prepare("DELETE FROM requests WHERE id = ?").run(req.params.id);
+  res.json({ ok: true });
 });
 
 app.patch("/api/requests/:id", requireAuth, (req, res) => {
@@ -219,7 +236,7 @@ app.patch("/api/requests/:id", requireAuth, (req, res) => {
 });
 
 app.delete("/api/requests/:id", requireAuth, (req, res) => {
-  db.prepare("DELETE FROM requests WHERE id = ?").run(req.params.id);
+  db.prepare("UPDATE requests SET deleted = 1 WHERE id = ?").run(req.params.id);
   res.json({ ok: true });
 });
 
@@ -248,7 +265,7 @@ app.get("/api/stats", requireAuth, (_req, res) => {
     viewsByDay.push({ day: d, count: byDayMap[d] || 0 });
   }
 
-  const statusRows = db.prepare("SELECT status, COUNT(*) c FROM requests GROUP BY status").all();
+  const statusRows = db.prepare("SELECT status, COUNT(*) c FROM requests WHERE deleted = 0 GROUP BY status").all();
   const byStatus = Object.fromEntries(statusRows.map((r) => [r.status, r.c]));
 
   res.json({
@@ -257,7 +274,7 @@ app.get("/api/stats", requireAuth, (_req, res) => {
     viewsByDay,
     topPages,
     requests: {
-      total: db.prepare("SELECT COUNT(*) c FROM requests").get().c,
+      total: db.prepare("SELECT COUNT(*) c FROM requests WHERE deleted = 0").get().c,
       byStatus,
     },
     products: db.prepare("SELECT COUNT(*) c FROM products").get().c,
