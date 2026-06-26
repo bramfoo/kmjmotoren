@@ -297,9 +297,32 @@
     });
   }
 
+  // ── Opening hours ───────────────────────────────────────────────────
+  async function loadOpeningstijden() {
+    const data = await KMJ.get("/api/openingstijden");
+    const input = document.getElementById("openingstijden-input");
+    // Show empty when it's the default, so the placeholder hints at it
+    input.value = data.value === "Geen vaste openingstijden" ? "" : (data.value || "");
+    const saveBtn = document.getElementById("openingstijden-save");
+    if (!saveBtn.dataset.bound) {
+      saveBtn.dataset.bound = "1";
+      saveBtn.addEventListener("click", async () => {
+        const msg = document.getElementById("openingstijden-msg");
+        try {
+          await KMJ.send("/api/openingstijden", "PUT", { value: input.value });
+          msg.textContent = "Opgeslagen ✓";
+          setTimeout(() => (msg.textContent = ""), 2000);
+        } catch (err) {
+          msg.textContent = "Mislukt";
+        }
+      });
+    }
+  }
+
   async function loadAll() {
     try {
       await loadStats();
+      await loadOpeningstijden();
       await loadRequests();
       await loadTrash();
       await loadOrders();

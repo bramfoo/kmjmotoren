@@ -1128,6 +1128,33 @@ body.is-admin .nav-links a.admin-only { display: inline-block; }
   text-decoration: underline;
 }
 .link-btn:hover { color: var(--text-light); }
+
+/* Opening hours (contact page renders newlines) */
+#openingstijden { white-space: pre-line; }
+
+/* Settings panel (dashboard) */
+.settings-panel {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+.settings-panel .section-title { margin-top: 0; }
+.settings-hint { color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.8rem; }
+#openingstijden-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  resize: vertical;
+  margin-bottom: 0.8rem;
+}
+#openingstijden-input:focus { outline: none; border-color: var(--orange); }
 .order-product {
   background: var(--dark);
   color: #fff;

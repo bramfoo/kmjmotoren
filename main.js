@@ -17,6 +17,15 @@ if (toggle && navLinks) {
   });
 }
 
+// Opening hours (loaded from the backend; editable in the dashboard)
+const otEl = document.getElementById('openingstijden');
+if (otEl) {
+  fetch('/api/openingstijden')
+    .then(r => r.json())
+    .then(d => { otEl.textContent = (d.value && d.value.trim()) ? d.value : 'Geen vaste openingstijden'; })
+    .catch(() => {});
+}
+
 // Service multi-select dropdown (optional)
 const serviceSelect = document.getElementById('service-select');
 if (serviceSelect) {

@@ -63,6 +63,16 @@
           </div>
         </div>
 
+        <section class="settings-panel">
+          <h2 class="section-title dash-requests-title">Openingstijden</h2>
+          <p class="settings-hint">Wordt op de contactpagina getoond. Laat leeg voor &ldquo;Geen vaste openingstijden&rdquo;. Elke regel komt op een nieuwe regel.</p>
+          <textarea id="openingstijden-input" rows="4" placeholder="Bijv.&#10;Ma t/m Vr 09:00 – 17:00&#10;Za op afspraak"></textarea>
+          <div class="request-actions">
+            <button class="btn btn-primary btn-sm" id="openingstijden-save" type="button">Opslaan</button>
+            <span class="save-msg" id="openingstijden-msg"></span>
+          </div>
+        </section>
+
         <h2 class="section-title dash-requests-title">Aanvragen</h2>
         <div id="requests-list" class="requests-list"></div>
         <p id="requests-empty" class="empty-state" hidden>Nog geen aanvragen.</p>

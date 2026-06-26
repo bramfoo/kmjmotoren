@@ -319,6 +319,20 @@ app.delete("/api/requests/:id", requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
+// ── Opening hours (editable setting) ────────────────────────────────
+app.get("/api/openingstijden", (_req, res) => {
+  const row = db.prepare("SELECT value FROM settings WHERE key = 'openingstijden'").get();
+  res.json({ value: row ? row.value : "Geen vaste openingstijden" });
+});
+
+app.put("/api/openingstijden", requireAuth, (req, res) => {
+  const value = (req.body.value || "").trim();
+  db.prepare(
+    "INSERT INTO settings (key, value) VALUES ('openingstijden', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
+  ).run(value);
+  res.json({ value });
+});
+
 // ── Analytics ───────────────────────────────────────────────────────
 app.post("/api/track", (req, res) => {
   const path = (req.body && req.body.path ? String(req.body.path) : "").slice(0, 300);
