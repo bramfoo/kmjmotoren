@@ -61,9 +61,9 @@
   }
 
   function buyControl(p) {
-    return p.reserved
-      ? `<span class="reserved-badge">&#9679; Gereserveerd</span>`
-      : `<button class="btn btn-primary btn-buy" id="buy-open" type="button">Kopen</button>`;
+    if (p.sold) return `<span class="reserved-badge sold-badge">&#10003; Verkocht</span>`;
+    if (p.reserved) return `<span class="reserved-badge">&#9679; Gereserveerd</span>`;
+    return `<button class="btn btn-primary btn-buy" id="buy-open" type="button">Kopen</button>`;
   }
 
   async function load() {

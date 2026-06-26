@@ -160,6 +160,9 @@ app.patch("/api/products/:id", requireAuth, (req, res) => {
   if (req.body.reserved !== undefined) {
     db.prepare("UPDATE products SET reserved = ? WHERE id = ?").run(req.body.reserved ? 1 : 0, req.params.id);
   }
+  if (req.body.sold !== undefined) {
+    db.prepare("UPDATE products SET sold = ? WHERE id = ?").run(req.body.sold ? 1 : 0, req.params.id);
+  }
   res.json(withImages(db.prepare("SELECT * FROM products WHERE id = ?").get(req.params.id)));
 });
 
@@ -178,6 +181,7 @@ app.post("/api/orders", (req, res) => {
   }
   const product = db.prepare("SELECT * FROM products WHERE id = ?").get(b.product_id);
   if (!product) return res.status(404).json({ error: "Product niet gevonden." });
+  if (product.sold) return res.status(409).json({ error: "Dit product is al verkocht." });
   if (product.reserved) return res.status(409).json({ error: "Dit product is al gereserveerd." });
 
   db.prepare(
@@ -188,11 +192,43 @@ app.post("/api/orders", (req, res) => {
 });
 
 app.get("/api/orders", requireAuth, (_req, res) => {
-  res.json(db.prepare("SELECT * FROM orders ORDER BY created_at DESC, id DESC").all());
+  res.json(db.prepare("SELECT * FROM orders WHERE deleted = 0 ORDER BY created_at DESC, id DESC").all());
+});
+
+app.get("/api/orders/trash", requireAuth, (_req, res) => {
+  res.json(db.prepare("SELECT * FROM orders WHERE deleted = 1 ORDER BY created_at DESC, id DESC").all());
+});
+
+// Accept an order → product marked sold, order archived to trash
+app.post("/api/orders/:id/accept", requireAuth, (req, res) => {
+  const order = db.prepare("SELECT * FROM orders WHERE id = ?").get(req.params.id);
+  if (!order) return res.status(404).json({ error: "Niet gevonden." });
+  if (order.product_id) db.prepare("UPDATE products SET sold = 1, reserved = 0 WHERE id = ?").run(order.product_id);
+  db.prepare("UPDATE orders SET deleted = 1 WHERE id = ?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+// Release reservation → product available again, order archived to trash
+app.post("/api/orders/:id/release", requireAuth, (req, res) => {
+  const order = db.prepare("SELECT * FROM orders WHERE id = ?").get(req.params.id);
+  if (!order) return res.status(404).json({ error: "Niet gevonden." });
+  if (order.product_id) db.prepare("UPDATE products SET reserved = 0 WHERE id = ?").run(order.product_id);
+  db.prepare("UPDATE orders SET deleted = 1 WHERE id = ?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+app.post("/api/orders/:id/restore", requireAuth, (req, res) => {
+  db.prepare("UPDATE orders SET deleted = 0 WHERE id = ?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+app.delete("/api/orders/:id/permanent", requireAuth, (req, res) => {
+  db.prepare("DELETE FROM orders WHERE id = ?").run(req.params.id);
+  res.json({ ok: true });
 });
 
 app.delete("/api/orders/:id", requireAuth, (req, res) => {
-  db.prepare("DELETE FROM orders WHERE id = ?").run(req.params.id);
+  db.prepare("UPDATE orders SET deleted = 1 WHERE id = ?").run(req.params.id);
   res.json({ ok: true });
 });
 
@@ -322,7 +358,7 @@ app.get("/api/stats", requireAuth, (_req, res) => {
     },
     products: db.prepare("SELECT COUNT(*) c FROM products").get().c,
     gallery: db.prepare("SELECT COUNT(*) c FROM gallery").get().c,
-    orders: db.prepare("SELECT COUNT(*) c FROM orders").get().c,
+    orders: db.prepare("SELECT COUNT(*) c FROM orders WHERE deleted = 0").get().c,
   });
 });
 

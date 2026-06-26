@@ -1113,8 +1113,21 @@ body.is-admin .nav-links a.admin-only { display: inline-block; }
 }
 .admin-modal-box { max-height: 90vh; overflow-y: auto; }
 
+/* Sold states */
+.sold-ribbon { background: #2e7d32; }
+.sold-badge { background: #e8f5e9; color: #2e7d32; border-color: #a5d6a7; }
+
 /* Order cards in the dashboard */
 .order-card { border-left-color: var(--dark) !important; }
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--dark);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.link-btn:hover { color: var(--text-light); }
 .order-product {
   background: var(--dark);
   color: #fff;

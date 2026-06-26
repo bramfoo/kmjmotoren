@@ -76,6 +76,15 @@ if (!productCols.includes("images")) {
 if (!productCols.includes("reserved")) {
   db.exec("ALTER TABLE products ADD COLUMN reserved INTEGER NOT NULL DEFAULT 0");
 }
+if (!productCols.includes("sold")) {
+  db.exec("ALTER TABLE products ADD COLUMN sold INTEGER NOT NULL DEFAULT 0");
+}
+
+// Migration: orders gained a `deleted` flag (soft-delete / trash bin).
+const orderCols = db.prepare("PRAGMA table_info(orders)").all().map((c) => c.name);
+if (!orderCols.includes("deleted")) {
+  db.exec("ALTER TABLE orders ADD COLUMN deleted INTEGER NOT NULL DEFAULT 0");
+}
 
 // Migration: requests gained a `deleted` flag (soft-delete / trash bin).
 const requestCols = db.prepare("PRAGMA table_info(requests)").all().map((c) => c.name);

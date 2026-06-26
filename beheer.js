@@ -163,7 +163,7 @@
   }
 
   function bindTrashEvents() {
-    document.querySelectorAll(".trash-card").forEach((card) => {
+    document.querySelectorAll("#trash-list .trash-card").forEach((card) => {
       const id = card.dataset.id;
       card.querySelector(".trash-restore").addEventListener("click", async () => {
         try {
@@ -204,8 +204,8 @@
         </p>
         <p class="request-line"><strong>Adres:</strong> ${escapeHtml(o.adres)}</p>
         <div class="request-actions">
-          ${o.product_id ? `<button class="btn btn-sm btn-primary order-release" type="button">Reservering opheffen</button>` : ""}
-          <button class="request-delete order-delete" type="button">Bestelling verwijderen</button>
+          <button class="btn btn-sm btn-primary order-accept" type="button">Bestelling accepteren</button>
+          <button class="order-release link-btn" type="button">Reservering opheffen</button>
         </div>
       </div>`;
   }
@@ -222,25 +222,74 @@
   function bindOrderEvents() {
     document.querySelectorAll("#orders-list .order-card").forEach((card) => {
       const id = card.dataset.id;
-      const productId = card.dataset.product;
-      const releaseBtn = card.querySelector(".order-release");
-      if (releaseBtn) {
-        releaseBtn.addEventListener("click", async () => {
-          try {
-            await KMJ.send("/api/products/" + productId, "PATCH", { reserved: 0 });
-            releaseBtn.textContent = "Weer beschikbaar ✓";
-            releaseBtn.disabled = true;
-          } catch (err) {
-            alert("Mislukt: " + err.message);
-          }
-        });
-      }
-      card.querySelector(".order-delete").addEventListener("click", async () => {
-        if (!confirm("Deze bestelling verwijderen?")) return;
+
+      card.querySelector(".order-accept").addEventListener("click", async () => {
+        if (!confirm("Bestelling accepteren? Het product wordt op 'Verkocht' gezet en de bestelling gaat naar de prullenbak.")) return;
         try {
-          await KMJ.send("/api/orders/" + id, "DELETE");
+          await KMJ.send("/api/orders/" + id + "/accept", "POST");
           loadOrders();
+          loadOrdersTrash();
           loadStats();
+        } catch (err) {
+          alert("Mislukt: " + err.message);
+        }
+      });
+
+      card.querySelector(".order-release").addEventListener("click", async () => {
+        if (!confirm("Reservering opheffen? Het product komt weer beschikbaar en de bestelling gaat naar de prullenbak.")) return;
+        try {
+          await KMJ.send("/api/orders/" + id + "/release", "POST");
+          loadOrders();
+          loadOrdersTrash();
+          loadStats();
+        } catch (err) {
+          alert("Mislukt: " + err.message);
+        }
+      });
+    });
+  }
+
+  // ── Orders trash ────────────────────────────────────────────────────
+  function orderTrashCard(o) {
+    return `
+      <div class="trash-card" data-id="${o.id}">
+        <div class="trash-info">
+          <strong>${escapeHtml(o.voornaam + " " + o.achternaam)}</strong>
+          <span class="request-date">${fmtDate(o.created_at)}</span>
+          <p class="request-line">${escapeHtml(o.product_name || "—")} &middot; ${escapeHtml(o.email)}${o.telefoon ? " &middot; " + escapeHtml(o.telefoon) : ""}</p>
+          <p class="trash-msg">${escapeHtml(o.adres)}</p>
+        </div>
+        <div class="trash-actions">
+          <button class="btn btn-primary btn-sm order-trash-restore" type="button">Herstellen</button>
+          <button class="trash-purge order-trash-purge" type="button">Definitief verwijderen</button>
+        </div>
+      </div>`;
+  }
+
+  async function loadOrdersTrash() {
+    const list = await KMJ.get("/api/orders/trash");
+    document.getElementById("orders-trash-count").textContent = list.length;
+    const wrap = document.getElementById("orders-trash-list");
+    const empty = document.getElementById("orders-trash-empty");
+    wrap.innerHTML = list.map(orderTrashCard).join("");
+    empty.hidden = list.length > 0;
+    document.querySelectorAll("#orders-trash-list .trash-card").forEach((card) => {
+      const id = card.dataset.id;
+      card.querySelector(".order-trash-restore").addEventListener("click", async () => {
+        try {
+          await KMJ.send("/api/orders/" + id + "/restore", "POST");
+          loadOrders();
+          loadOrdersTrash();
+          loadStats();
+        } catch (err) {
+          alert("Herstellen mislukt: " + err.message);
+        }
+      });
+      card.querySelector(".order-trash-purge").addEventListener("click", async () => {
+        if (!confirm("Definitief verwijderen? Dit kan niet ongedaan worden gemaakt.")) return;
+        try {
+          await KMJ.send("/api/orders/" + id + "/permanent", "DELETE");
+          loadOrdersTrash();
         } catch (err) {
           alert("Verwijderen mislukt: " + err.message);
         }
@@ -254,6 +303,7 @@
       await loadRequests();
       await loadTrash();
       await loadOrders();
+      await loadOrdersTrash();
     } catch (err) {
       dash.innerHTML = '<p class="empty-state">Kon dashboard niet laden.</p>';
     }
