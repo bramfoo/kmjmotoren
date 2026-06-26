@@ -184,9 +184,21 @@ app.post("/api/orders", (req, res) => {
   if (product.sold) return res.status(409).json({ error: "Dit product is al verkocht." });
   if (product.reserved) return res.status(409).json({ error: "Dit product is al gereserveerd." });
 
+  const code = (b.discount_code || "").trim().toUpperCase() || null;
+  const base = Number(product.price);
+  const price = isNaN(base) ? null : base;
+  let finalPrice = price;
+  if (code && price != null) {
+    const disc = db.prepare("SELECT * FROM discounts WHERE UPPER(code) = ?").get(code);
+    if (disc) {
+      finalPrice = disc.type === "amount"
+        ? Math.max(0, price - disc.value)
+        : Math.round(price * (1 - disc.value / 100) * 100) / 100;
+    }
+  }
   db.prepare(
-    "INSERT INTO orders (product_id, product_name, voornaam, achternaam, adres, email, telefoon, discount_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-  ).run(product.id, product.name, fields.voornaam, fields.achternaam, fields.adres, fields.email, fields.telefoon, (b.discount_code || "").trim().toUpperCase() || null);
+    "INSERT INTO orders (product_id, product_name, voornaam, achternaam, adres, email, telefoon, discount_code, price, final_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  ).run(product.id, product.name, fields.voornaam, fields.achternaam, fields.adres, fields.email, fields.telefoon, code, price, finalPrice);
   db.prepare("UPDATE products SET reserved = 1 WHERE id = ?").run(product.id);
   res.status(201).json({ ok: true });
 });
