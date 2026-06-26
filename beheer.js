@@ -70,6 +70,7 @@
         </p>
         ${r.voertuig ? `<p class="request-line"><strong>Voertuig:</strong> ${escapeHtml(r.voertuig)}</p>` : ""}
         ${r.services ? `<p class="request-line"><strong>Service(s):</strong> ${escapeHtml(r.services)}</p>` : ""}
+        ${r.discount_code ? `<p class="request-line"><strong>Kortingscode:</strong> ${escapeHtml(r.discount_code)}</p>` : ""}
         <p class="request-msg">${escapeHtml(r.bericht)}</p>
         <div class="request-notes">
           <label>Notities (intern)</label>
@@ -203,6 +204,7 @@
           &middot; <a href="tel:${escapeHtml(o.telefoon)}">${escapeHtml(o.telefoon)}</a>
         </p>
         <p class="request-line"><strong>Adres:</strong> ${escapeHtml(o.adres)}</p>
+        ${o.discount_code ? `<p class="request-line"><strong>Kortingscode:</strong> ${escapeHtml(o.discount_code)}</p>` : ""}
         <div class="request-actions">
           <button class="btn btn-sm btn-primary order-accept" type="button">Bestelling accepteren</button>
           <button class="order-release link-btn" type="button">Reservering opheffen</button>
@@ -319,10 +321,65 @@
     }
   }
 
+  // ── Discount codes ──────────────────────────────────────────────────
+  function discountItem(d) {
+    const val = d.type === "amount" ? "€ " + d.value : d.value + "%";
+    return `
+      <div class="discount-item" data-id="${d.id}">
+        <span class="discount-code-badge">${escapeHtml(d.code)}</span>
+        <span class="discount-val">${val} korting</span>
+        ${d.description ? `<span class="discount-desc">${escapeHtml(d.description)}</span>` : ""}
+        <button class="trash-purge discount-delete" type="button" data-id="${d.id}">Verwijderen</button>
+      </div>`;
+  }
+
+  async function loadDiscounts() {
+    const list = await KMJ.get("/api/discounts");
+    const wrap = document.getElementById("discount-list");
+    const empty = document.getElementById("discount-empty");
+    wrap.innerHTML = list.map(discountItem).join("");
+    empty.hidden = list.length > 0;
+    wrap.querySelectorAll(".discount-delete").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (!confirm("Deze kortingscode verwijderen?")) return;
+        try {
+          await KMJ.send("/api/discounts/" + btn.dataset.id, "DELETE");
+          loadDiscounts();
+        } catch (err) {
+          alert("Verwijderen mislukt: " + err.message);
+        }
+      });
+    });
+
+    const form = document.getElementById("discount-form");
+    if (!form.dataset.bound) {
+      form.dataset.bound = "1";
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const msg = document.getElementById("discount-msg");
+        try {
+          await KMJ.send("/api/discounts", "POST", {
+            code: document.getElementById("discount-code").value,
+            type: document.getElementById("discount-type").value,
+            value: document.getElementById("discount-value").value,
+            description: document.getElementById("discount-desc").value,
+          });
+          form.reset();
+          msg.textContent = "Toegevoegd ✓";
+          setTimeout(() => (msg.textContent = ""), 2000);
+          loadDiscounts();
+        } catch (err) {
+          msg.textContent = err.message;
+        }
+      });
+    }
+  }
+
   async function loadAll() {
     try {
       await loadStats();
       await loadOpeningstijden();
+      await loadDiscounts();
       await loadRequests();
       await loadTrash();
       await loadOrders();

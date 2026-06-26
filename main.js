@@ -75,6 +75,7 @@ if (contactForm) contactForm.addEventListener('submit', function (e) {
     voertuig: this.voertuig.value.trim(),
     bericht,
     services,
+    discount_code: this.kortingscode.value.trim(),
   };
 
   notice.textContent = 'Bezig met verzenden…';

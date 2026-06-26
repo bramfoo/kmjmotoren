@@ -3,6 +3,7 @@
   const wrap = document.getElementById("product-detail");
   const msg = document.getElementById("product-detail-msg");
   const id = new URLSearchParams(location.search).get("id");
+  let currentProduct = null;
 
   function escapeHtml(s) {
     return (s || "").replace(/[&<>"']/g, (c) => ({
@@ -17,6 +18,7 @@
   }
 
   function render(p) {
+    currentProduct = p;
     document.title = p.name + " – KMJ Motoren";
     const imgs = (p.images && p.images.length) ? p.images : [];
     const main = imgs[0];
@@ -83,6 +85,7 @@
     document.getElementById("buy-form-wrap").hidden = false;
     document.getElementById("buy-success").hidden = true;
     document.getElementById("buy-msg").textContent = "";
+    document.getElementById("buy-discount-feedback").textContent = "";
     document.getElementById("buy-modal").classList.add("open");
   }
   function closeBuyModal() {
@@ -96,6 +99,29 @@
     document.getElementById("buy-success-close").addEventListener("click", closeBuyModal);
     modal.addEventListener("click", (e) => { if (e.target === modal) closeBuyModal(); });
 
+    // Validate a discount code and show the resulting price
+    const fb = document.getElementById("buy-discount-feedback");
+    document.getElementById("buy-discount-apply").addEventListener("click", async () => {
+      const code = val("buy-discount");
+      if (!code) { fb.textContent = ""; return; }
+      try {
+        const r = await KMJ.send("/api/discounts/validate", "POST", { code });
+        if (!r.valid) { fb.textContent = "Ongeldige code."; fb.className = "discount-feedback invalid"; return; }
+        const label = r.type === "amount" ? "€ " + r.value + " korting" : r.value + "% korting";
+        const price = Number(currentProduct && currentProduct.price);
+        if (!isNaN(price) && price > 0) {
+          const newPrice = r.type === "amount" ? Math.max(0, price - r.value) : price * (1 - r.value / 100);
+          fb.textContent = "✓ " + label + " → " + KMJ.euro(newPrice);
+        } else {
+          fb.textContent = "✓ Code geldig (" + label + ")";
+        }
+        fb.className = "discount-feedback valid";
+      } catch (err) {
+        fb.textContent = "Kon code niet controleren.";
+        fb.className = "discount-feedback invalid";
+      }
+    });
+
     document.getElementById("buy-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const msg = document.getElementById("buy-msg");
@@ -106,6 +132,7 @@
         adres: val("buy-adres"),
         email: val("buy-email"),
         telefoon: val("buy-telefoon"),
+        discount_code: val("buy-discount"),
       };
       if (!payload.voornaam || !payload.achternaam || !payload.adres || !payload.email || !payload.telefoon) {
         msg.textContent = "Vul alle velden in.";

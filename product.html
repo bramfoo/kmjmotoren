@@ -76,6 +76,14 @@
             <label for="buy-telefoon">Telefoon *</label>
             <input type="tel" id="buy-telefoon" required />
           </div>
+          <div class="form-group">
+            <label for="buy-discount">Kortingscode (optioneel)</label>
+            <div class="discount-row">
+              <input type="text" id="buy-discount" placeholder="Bijv. ZOMER10" />
+              <button type="button" class="btn btn-sm btn-primary" id="buy-discount-apply">Toepassen</button>
+            </div>
+            <p class="discount-feedback" id="buy-discount-feedback" aria-live="polite"></p>
+          </div>
           <button type="submit" class="btn btn-primary btn-full">Bevestigen</button>
           <p class="form-notice" id="buy-msg" aria-live="polite"></p>
         </form>

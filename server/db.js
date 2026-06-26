@@ -66,6 +66,15 @@ db.exec(`
     email        TEXT NOT NULL,
     telefoon     TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS discounts (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+    code        TEXT NOT NULL,
+    type        TEXT NOT NULL DEFAULT 'percent',  -- 'percent' | 'amount'
+    value       REAL NOT NULL,
+    description TEXT
+  );
 `);
 
 // Migration: products gained an `images` column (JSON array of photo URLs).
@@ -86,16 +95,24 @@ if (!orderCols.includes("deleted")) {
   db.exec("ALTER TABLE orders ADD COLUMN deleted INTEGER NOT NULL DEFAULT 0");
 }
 
-// Seed default opening hours (editable from the dashboard).
-const ot = db.prepare("SELECT value FROM settings WHERE key = 'openingstijden'").get();
-if (!ot) {
-  db.prepare("INSERT INTO settings (key, value) VALUES ('openingstijden', ?)").run("Geen vaste openingstijden");
-}
-
 // Migration: requests gained a `deleted` flag (soft-delete / trash bin).
 const requestCols = db.prepare("PRAGMA table_info(requests)").all().map((c) => c.name);
 if (!requestCols.includes("deleted")) {
   db.exec("ALTER TABLE requests ADD COLUMN deleted INTEGER NOT NULL DEFAULT 0");
+}
+
+// Migration: orders & requests can record a discount code.
+if (!orderCols.includes("discount_code")) {
+  db.exec("ALTER TABLE orders ADD COLUMN discount_code TEXT");
+}
+if (!requestCols.includes("discount_code")) {
+  db.exec("ALTER TABLE requests ADD COLUMN discount_code TEXT");
+}
+
+// Seed default opening hours (editable from the dashboard).
+const ot = db.prepare("SELECT value FROM settings WHERE key = 'openingstijden'").get();
+if (!ot) {
+  db.prepare("INSERT INTO settings (key, value) VALUES ('openingstijden', ?)").run("Geen vaste openingstijden");
 }
 
 // Persistent session secret (env overrides; otherwise generated + stored once).

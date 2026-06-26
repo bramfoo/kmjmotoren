@@ -185,8 +185,8 @@ app.post("/api/orders", (req, res) => {
   if (product.reserved) return res.status(409).json({ error: "Dit product is al gereserveerd." });
 
   db.prepare(
-    "INSERT INTO orders (product_id, product_name, voornaam, achternaam, adres, email, telefoon) VALUES (?, ?, ?, ?, ?, ?, ?)"
-  ).run(product.id, product.name, fields.voornaam, fields.achternaam, fields.adres, fields.email, fields.telefoon);
+    "INSERT INTO orders (product_id, product_name, voornaam, achternaam, adres, email, telefoon, discount_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+  ).run(product.id, product.name, fields.voornaam, fields.achternaam, fields.adres, fields.email, fields.telefoon, (b.discount_code || "").trim().toUpperCase() || null);
   db.prepare("UPDATE products SET reserved = 1 WHERE id = ?").run(product.id);
   res.status(201).json({ ok: true });
 });
@@ -280,8 +280,8 @@ app.post("/api/requests", (req, res) => {
   }
   const services = Array.isArray(b.services) ? b.services.join(", ") : (b.services || "");
   db.prepare(
-    "INSERT INTO requests (naam, email, telefoon, voertuig, services, bericht) VALUES (?, ?, ?, ?, ?, ?)"
-  ).run(naam, email, telefoon, (b.voertuig || "").trim() || null, services || null, bericht);
+    "INSERT INTO requests (naam, email, telefoon, voertuig, services, bericht, discount_code) VALUES (?, ?, ?, ?, ?, ?, ?)"
+  ).run(naam, email, telefoon, (b.voertuig || "").trim() || null, services || null, bericht, (b.discount_code || "").trim().toUpperCase() || null);
   res.status(201).json({ ok: true });
 });
 
@@ -317,6 +317,39 @@ app.patch("/api/requests/:id", requireAuth, (req, res) => {
 app.delete("/api/requests/:id", requireAuth, (req, res) => {
   db.prepare("UPDATE requests SET deleted = 1 WHERE id = ?").run(req.params.id);
   res.json({ ok: true });
+});
+
+// ── Discount codes ──────────────────────────────────────────────────
+app.get("/api/discounts", requireAuth, (_req, res) => {
+  res.json(db.prepare("SELECT * FROM discounts ORDER BY created_at DESC, id DESC").all());
+});
+
+app.post("/api/discounts", requireAuth, (req, res) => {
+  const code = (req.body.code || "").trim().toUpperCase();
+  const type = req.body.type === "amount" ? "amount" : "percent";
+  const value = Number(req.body.value);
+  if (!code || !(value > 0)) return res.status(400).json({ error: "Code en een geldige waarde zijn verplicht." });
+  if (db.prepare("SELECT id FROM discounts WHERE UPPER(code) = ?").get(code)) {
+    return res.status(409).json({ error: "Deze code bestaat al." });
+  }
+  const info = db
+    .prepare("INSERT INTO discounts (code, type, value, description) VALUES (?, ?, ?, ?)")
+    .run(code, type, value, (req.body.description || "").trim() || null);
+  res.status(201).json(db.prepare("SELECT * FROM discounts WHERE id = ?").get(info.lastInsertRowid));
+});
+
+app.delete("/api/discounts/:id", requireAuth, (req, res) => {
+  db.prepare("DELETE FROM discounts WHERE id = ?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+// Public: check a code (used by the buy modal and the contact form)
+app.post("/api/discounts/validate", (req, res) => {
+  const code = (req.body.code || "").trim().toUpperCase();
+  if (!code) return res.json({ valid: false });
+  const row = db.prepare("SELECT * FROM discounts WHERE UPPER(code) = ?").get(code);
+  if (!row) return res.json({ valid: false });
+  res.json({ valid: true, code: row.code, type: row.type, value: row.value, description: row.description });
 });
 
 // ── Opening hours (editable setting) ────────────────────────────────
