@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product – KMJ Motoren</title>
+  <meta name="description" content="Productdetails bij KMJ Motoren." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo"><img class="logo-img" src="assets/logo.svg" alt="KMJ Motoren" /></a>
+      <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html#diensten">Diensten</a>
+        <a href="beheer.html" class="admin-only">Dashboard</a>
+        <a href="index.html#over-ons">Over ons</a>
+        <a href="producten.html">Producten</a>
+        <a href="socials.html">Socials</a>
+        <a href="index.html#contact" class="btn btn-nav">Afspraak maken</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="subpage">
+    <div class="container">
+      <a href="producten.html" class="back-link">&#8592; Terug naar producten</a>
+      <div id="product-detail" class="product-detail"></div>
+      <p id="product-detail-msg" class="empty-state" hidden></p>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <img class="footer-logo-img" src="assets/logo.svg" alt="KMJ Motoren" />
+      <p>&copy; 2026 KMJ Motoren – Alle rechten voorbehouden</p>
+    </div>
+  </footer>
+
+  <!-- BUY MODAL -->
+  <div class="admin-modal buy-modal" id="buy-modal">
+    <div class="admin-modal-box">
+      <button class="admin-modal-close" id="buy-close" type="button" aria-label="Sluiten">&times;</button>
+      <div id="buy-form-wrap">
+        <h3>Product kopen</h3>
+        <p class="buy-intro">Vul uw gegevens in. Wij nemen daarna contact met u op om de aankoop af te ronden.</p>
+        <form class="buy-form" id="buy-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="buy-voornaam">Voornaam *</label>
+              <input type="text" id="buy-voornaam" required />
+            </div>
+            <div class="form-group">
+              <label for="buy-achternaam">Achternaam *</label>
+              <input type="text" id="buy-achternaam" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="buy-adres">Adres *</label>
+            <input type="text" id="buy-adres" placeholder="Straat, huisnummer, postcode, plaats" required />
+          </div>
+          <div class="form-group">
+            <label for="buy-email">E-mail *</label>
+            <input type="email" id="buy-email" required />
+          </div>
+          <div class="form-group">
+            <label for="buy-telefoon">Telefoon *</label>
+            <input type="tel" id="buy-telefoon" required />
+          </div>
+          <div class="form-group">
+            <label for="buy-discount">Kortingscode (optioneel)</label>
+            <div class="discount-row">
+              <input type="text" id="buy-discount" placeholder="Bijv. ZOMER10" />
+              <button type="button" class="btn btn-sm btn-primary" id="buy-discount-apply">Toepassen</button>
+            </div>
+            <p class="discount-feedback" id="buy-discount-feedback" aria-live="polite"></p>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Bevestigen</button>
+          <p class="form-notice" id="buy-msg" aria-live="polite"></p>
+        </form>
+      </div>
+      <div id="buy-success" class="buy-success" hidden>
+        <div class="buy-check">&#10003;</div>
+        <h3>Bedankt voor uw aankoop!</h3>
+        <p>We nemen zo snel mogelijk contact met u op.</p>
+        <button class="btn btn-primary" id="buy-success-close" type="button">Sluiten</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script src="product.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

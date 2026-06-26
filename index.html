@@ -15,14 +15,16 @@
   <!-- NAV -->
   <header class="navbar">
     <div class="container nav-inner">
-      <a href="#" class="logo">KMJ <span>Motoren</span></a>
+      <a href="#" class="logo"><img class="logo-img" src="assets/logo.svg" alt="KMJ Motoren" /></a>
       <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <nav class="nav-links" id="nav-links">
         <a href="#diensten">Diensten</a>
+        <a href="beheer.html" class="admin-only">Dashboard</a>
         <a href="#over-ons">Over ons</a>
-        <a href="#contact">Contact</a>
+        <a href="producten.html">Producten</a>
+        <a href="socials.html">Socials</a>
         <a href="#contact" class="btn btn-nav">Afspraak maken</a>
       </nav>
     </div>
@@ -111,7 +113,7 @@
         </div>
 
         <div class="dienst-card">
-          <div class="dienst-icon">&#128137;</div>
+          <div class="dienst-icon">&#128734;</div>
           <h3>Banden &amp; Remmen</h3>
           <p>Bandenmontage, uitbalanceren en remservice voor optimale veiligheid.</p>
         </div>
@@ -120,6 +122,12 @@
           <div class="dienst-icon">&#9889;</div>
           <h3>Elektrische Systemen</h3>
           <p>Accu, lichtinstallatie, startmotor en alle andere elektrische componenten.</p>
+        </div>
+
+        <div class="dienst-card">
+          <div class="dienst-icon">&#129533;</div>
+          <h3>Schoonmaak beurt</h3>
+          <p>Grondige reiniging en poetsbeurt zodat uw scooter of motor er weer als nieuw uitziet.</p>
         </div>
 
       </div>
@@ -144,7 +152,7 @@
         <div class="visual-card">
           <div class="stat"><span class="stat-num">3+</span><span class="stat-label">Jaar ervaring</span></div>
           <div class="stat"><span class="stat-num">20+</span><span class="stat-label">Tevreden klanten</span></div>
-          <div class="stat"><span class="stat-num">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span class="stat-label">Klantwaardering</span></div>
+          <div class="stat"><span class="stat-num stat-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span class="stat-label">Klantwaardering</span></div>
         </div>
       </div>
     </div>
@@ -169,21 +177,21 @@
             <div class="contact-icon">&#128222;</div>
             <div>
               <strong>Telefoon</strong>
-              <p><a href="tel:+31612345678">06 12 34 56 78</a></p>
+              <p><a href="tel:+31615578850">06 15 57 88 50</a></p>
             </div>
           </div>
           <div class="contact-item">
             <div class="contact-icon">&#9993;</div>
             <div>
               <strong>E-mail</strong>
-              <p><a href="mailto:info@kmjmotoren.nl">info@kmjmotoren.nl</a></p>
+              <p><a href="mailto:kmjenginesbv@gmail.com">kmjenginesbv@gmail.com</a></p>
             </div>
           </div>
           <div class="contact-item">
             <div class="contact-icon">&#128336;</div>
             <div>
               <strong>Openingstijden</strong>
-              <p>Ma – Vr: 08:30 – 17:30<br />Za: 09:00 – 14:00<br />Zo: gesloten</p>
+              <p id="openingstijden">Geen vaste openingstijden</p>
             </div>
           </div>
         </div>
@@ -195,8 +203,8 @@
               <input type="text" id="naam" name="naam" placeholder="Uw naam" required />
             </div>
             <div class="form-group">
-              <label for="telefoon">Telefoon</label>
-              <input type="tel" id="telefoon" name="telefoon" placeholder="06 00 00 00 00" />
+              <label for="telefoon">Telefoon *</label>
+              <input type="tel" id="telefoon" name="telefoon" placeholder="06 00 00 00 00" required />
             </div>
           </div>
           <div class="form-group">
@@ -206,6 +214,27 @@
           <div class="form-group">
             <label for="voertuig">Voertuig</label>
             <input type="text" id="voertuig" name="voertuig" placeholder="Merk, model en bouwjaar" />
+          </div>
+          <div class="form-group">
+            <label>Welke service(s)? (optioneel)</label>
+            <div class="service-select" id="service-select">
+              <button type="button" class="service-toggle" id="service-toggle" aria-expanded="false">
+                <span id="service-toggle-label">Kies service(s)</span>
+                <span class="service-caret">&#9662;</span>
+              </button>
+              <div class="service-menu" id="service-menu">
+                <label><input type="checkbox" name="service" value="Onderhoud &amp; Beurt" /> Onderhoud &amp; Beurt</label>
+                <label><input type="checkbox" name="service" value="Diagnose &amp; Reparatie" /> Diagnose &amp; Reparatie</label>
+                <label><input type="checkbox" name="service" value="Motor Revisie" /> Motor Revisie</label>
+                <label><input type="checkbox" name="service" value="Banden &amp; Remmen" /> Banden &amp; Remmen</label>
+                <label><input type="checkbox" name="service" value="Elektrische Systemen" /> Elektrische Systemen</label>
+                <label><input type="checkbox" name="service" value="Schoonmaak beurt" /> Schoonmaak beurt</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="kortingscode">Kortingscode (optioneel)</label>
+            <input type="text" id="kortingscode" name="kortingscode" placeholder="Bijv. ZOMER10" />
           </div>
           <div class="form-group">
             <label for="bericht">Bericht *</label>
@@ -239,16 +268,13 @@
   <!-- FOOTER -->
   <footer class="footer">
     <div class="container footer-inner">
-      <p class="footer-logo">KMJ <span>Motoren</span></p>
+      <img class="footer-logo-img" src="assets/logo.svg" alt="KMJ Motoren" />
       <p>&copy; 2026 KMJ Motoren – Alle rechten voorbehouden</p>
-      <nav class="footer-nav">
-        <a href="#diensten">Diensten</a>
-        <a href="#over-ons">Over ons</a>
-        <a href="#contact">Contact</a>
-      </nav>
     </div>
   </footer>
 
+  <script src="config.js"></script>
+  <script src="app.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
