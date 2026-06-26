@@ -205,6 +205,11 @@
         </p>
         <p class="request-line"><strong>Adres:</strong> ${escapeHtml(o.adres)}</p>
         ${o.discount_code ? `<p class="request-line"><strong>Kortingscode:</strong> ${escapeHtml(o.discount_code)}</p>` : ""}
+        ${o.price != null ? `<p class="request-line"><strong>Prijs:</strong> ${
+          o.final_price != null && o.final_price !== o.price
+            ? `<s>${escapeHtml(KMJ.euro(o.price))}</s> <strong>${escapeHtml(KMJ.euro(o.final_price))}</strong>`
+            : `<strong>${escapeHtml(KMJ.euro(o.price))}</strong>`
+        }</p>` : ""}
         <div class="request-actions">
           <button class="btn btn-sm btn-primary order-accept" type="button">Bestelling accepteren</button>
           <button class="order-release link-btn" type="button">Reservering opheffen</button>

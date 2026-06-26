@@ -85,7 +85,7 @@
     const isLink = typeSel.value === "embed";
     fileRow.hidden = isLink;
     linkRow.hidden = !isLink;
-    fileInput.accept = typeSel.value === "video" ? "video/*" : "image/*";
+    fileInput.accept = typeSel.value === "video" ? "video/*" : "image/*,.heic,.heif";
   }
 
   if (typeSel) typeSel.addEventListener("change", syncFormMode);
