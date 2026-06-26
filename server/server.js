@@ -11,6 +11,7 @@ const cookieParser = require("cookie-parser");
 const multer = require("multer");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const heicConvert = require("heic-convert");
 
 const { db, getSessionSecret } = require("./db");
 
@@ -39,7 +40,11 @@ const upload = multer({
   storage,
   limits: { fileSize: 150 * 1024 * 1024 }, // 150 MB (short videos)
   fileFilter: (_req, file, cb) => {
-    if (/^image\/|^video\//.test(file.mimetype)) cb(null, true);
+    const okMime = /^image\/|^video\//.test(file.mimetype);
+    // HEIC/HEIF (iPhone photos) sometimes arrive as application/octet-stream,
+    // so also accept by file extension.
+    const okHeic = /\.(heic|heif)$/i.test(file.originalname) || /heic|heif/i.test(file.mimetype);
+    if (okMime || okHeic) cb(null, true);
     else cb(new Error("Alleen afbeeldingen of video's zijn toegestaan."));
   },
 });
@@ -57,6 +62,26 @@ function removeLocalFile(url) {
     const f = path.join(UPLOADS_DIR, path.basename(url));
     fs.promises.unlink(f).catch(() => {}); // best-effort
   }
+}
+
+// Return the public URL for an uploaded file. HEIC/HEIF (iPhone photos) are
+// converted to JPEG so every browser can display them.
+async function toPublicUrl(file) {
+  const ext = path.extname(file.filename).toLowerCase();
+  if (ext === ".heic" || ext === ".heif") {
+    try {
+      const input = await fs.promises.readFile(file.path);
+      const output = await heicConvert({ buffer: input, format: "JPEG", quality: 0.9 });
+      const jpgName = file.filename.replace(/\.(heic|heif)$/i, ".jpg");
+      await fs.promises.writeFile(path.join(UPLOADS_DIR, jpgName), output);
+      await fs.promises.unlink(file.path).catch(() => {});
+      return `/uploads/${jpgName}`;
+    } catch (e) {
+      // Conversion failed → keep the original file rather than losing the upload.
+      return `/uploads/${file.filename}`;
+    }
+  }
+  return `/uploads/${file.filename}`;
 }
 
 function signSession(admin) {
@@ -129,10 +154,11 @@ app.get("/api/products/:id", (req, res) => {
   res.json(withImages(row));
 });
 
-app.post("/api/products", requireAuth, upload.array("images", 12), (req, res) => {
+app.post("/api/products", requireAuth, upload.array("images", 12), async (req, res) => {
   const name = (req.body.name || "").trim();
   if (!name) return res.status(400).json({ error: "Naam is verplicht." });
-  const urls = (req.files || []).map((f) => `/uploads/${f.filename}`);
+  const urls = [];
+  for (const f of req.files || []) urls.push(await toPublicUrl(f));
   const info = db
     .prepare("INSERT INTO products (name, price, description, image_url, images) VALUES (?, ?, ?, ?, ?)")
     .run(
@@ -250,7 +276,7 @@ app.get("/api/gallery", (_req, res) => {
   res.json(rows);
 });
 
-app.post("/api/gallery", requireAuth, upload.single("file"), (req, res) => {
+app.post("/api/gallery", requireAuth, upload.single("file"), async (req, res) => {
   const kind = req.body.kind;
   const caption = (req.body.caption || "").trim() || null;
   let url, platform = null;
@@ -261,7 +287,7 @@ app.post("/api/gallery", requireAuth, upload.single("file"), (req, res) => {
     platform = detectPlatform(url);
   } else if (kind === "image" || kind === "video") {
     if (!req.file) return res.status(400).json({ error: "Geen bestand ontvangen." });
-    url = `/uploads/${req.file.filename}`;
+    url = await toPublicUrl(req.file);
   } else {
     return res.status(400).json({ error: "Ongeldig type." });
   }
