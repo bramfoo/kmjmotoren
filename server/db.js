@@ -109,6 +109,32 @@ if (!requestCols.includes("discount_code")) {
   db.exec("ALTER TABLE requests ADD COLUMN discount_code TEXT");
 }
 
+// Migration: orders record the price (and price after discount) at order time.
+if (!orderCols.includes("price")) {
+  db.exec("ALTER TABLE orders ADD COLUMN price REAL");
+}
+if (!orderCols.includes("final_price")) {
+  db.exec("ALTER TABLE orders ADD COLUMN final_price REAL");
+}
+
+// Backfill price for existing orders (where the product still exists).
+for (const o of db.prepare("SELECT * FROM orders WHERE price IS NULL AND product_id IS NOT NULL").all()) {
+  const product = db.prepare("SELECT price FROM products WHERE id = ?").get(o.product_id);
+  if (!product) continue;
+  const base = Number(product.price);
+  if (isNaN(base)) continue;
+  let finalPrice = base;
+  if (o.discount_code) {
+    const disc = db.prepare("SELECT * FROM discounts WHERE UPPER(code) = ?").get(String(o.discount_code).toUpperCase());
+    if (disc) {
+      finalPrice = disc.type === "amount"
+        ? Math.max(0, base - disc.value)
+        : Math.round(base * (1 - disc.value / 100) * 100) / 100;
+    }
+  }
+  db.prepare("UPDATE orders SET price = ?, final_price = ? WHERE id = ?").run(base, finalPrice, o.id);
+}
+
 // Seed default opening hours (editable from the dashboard).
 const ot = db.prepare("SELECT value FROM settings WHERE key = 'openingstijden'").get();
 if (!ot) {

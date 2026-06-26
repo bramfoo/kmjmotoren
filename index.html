@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -84,6 +85,20 @@
           <p>6 maanden garantie op uitgevoerde reparaties</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- UITGELICHT CAROUSEL -->
+  <section class="carousel-section" id="uitgelicht">
+    <div class="container">
+      <h2 class="section-title">Uitgelicht</h2>
+      <p class="section-sub">Onze producten en socials op een rij.</p>
+      <div class="carousel">
+        <button class="carousel-btn prev" type="button" aria-label="Vorige">&#8249;</button>
+        <div class="carousel-track" id="carousel-track"></div>
+        <button class="carousel-btn next" type="button" aria-label="Volgende">&#8250;</button>
+      </div>
+      <p class="carousel-empty" id="carousel-empty" hidden>Nog niets om te tonen.</p>
     </div>
   </section>
 
@@ -275,6 +290,7 @@
 
   <script src="config.js"></script>
   <script src="app.js"></script>
+  <script src="carousel.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -62,7 +63,7 @@
           </div>
           <div class="form-group">
             <label for="product-image">Foto's (meerdere mogelijk)</label>
-            <input type="file" id="product-image" accept="image/*" multiple />
+            <input type="file" id="product-image" accept="image/*,.heic,.heif" multiple />
           </div>
           <button type="submit" class="btn btn-primary">Product opslaan</button>
           <p class="form-notice" id="product-form-msg" aria-live="polite"></p>

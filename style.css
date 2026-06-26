@@ -250,6 +250,98 @@ body {
   margin-top: 0.1rem;
 }
 
+/* ── UITGELICHT CAROUSEL ── */
+.carousel-section { padding: 4rem 0 1rem; background: var(--white); }
+.carousel { position: relative; margin-top: 1.5rem; }
+.carousel-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding-bottom: 0.5rem;
+}
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-item {
+  flex: 0 0 auto;
+  width: 230px;
+  height: 330px;
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  scroll-snap-align: start;
+  background: #000;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+.carousel-item img,
+.carousel-item video,
+.carousel-item iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+  display: block;
+}
+.ci-noimg {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem; background: #eceef1;
+}
+.ci-link {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; text-decoration: none; font-weight: 600;
+}
+.ci-caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 1.6rem 0.9rem 0.8rem;
+  background: linear-gradient(transparent, rgba(0,0,0,0.85));
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.ci-name { font-weight: 700; font-size: 0.95rem; line-height: 1.3; }
+.ci-price { font-weight: 900; }
+.ci-badge {
+  position: absolute;
+  top: 0.6rem; left: 0.6rem;
+  background: var(--dark);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  z-index: 2;
+}
+.ci-badge.sold { background: #2e7d32; }
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--dark);
+  border: 1px solid #ddd;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 5;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  transition: background var(--transition), color var(--transition);
+}
+.carousel-btn.prev { left: -8px; }
+.carousel-btn.next { right: -8px; }
+.carousel-btn:hover { background: var(--dark); color: #fff; }
+.carousel-empty { text-align: center; color: var(--text-light); padding: 2rem 0; }
+
 /* ── DIENSTEN ── */
 .diensten {
   padding: 5rem 0;
@@ -500,10 +592,6 @@ body {
   height: 44px;
   width: auto;
   display: block;
-}
-.footer .logo-img,
-.dark-bg .logo-img {
-  filter: invert(1);
 }
 
 /* ── FOOTER ── */
