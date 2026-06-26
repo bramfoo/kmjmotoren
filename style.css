@@ -501,10 +501,6 @@ body {
   width: auto;
   display: block;
 }
-.footer .logo-img,
-.dark-bg .logo-img {
-  filter: invert(1);
-}
 
 /* ── FOOTER ── */
 .footer {
