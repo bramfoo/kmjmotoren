@@ -495,6 +495,17 @@ body {
   box-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
 
+/* ── LOGO IMAGE ── */
+.logo-img {
+  height: 44px;
+  width: auto;
+  display: block;
+}
+.footer .logo-img,
+.dark-bg .logo-img {
+  filter: invert(1);
+}
+
 /* ── FOOTER ── */
 .footer {
   background: #111;

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 72" role="img" aria-label="KMJ Motoren">
+  <text
+    x="110" y="54"
+    text-anchor="middle"
+    font-family="'Arial Black', 'Arial Bold', Arial, sans-serif"
+    font-weight="900"
+    font-size="62"
+    fill="#1a1a1a"
+    letter-spacing="-1"
+  >KMJ</text>
+  <text
+    x="110" y="70"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-weight="600"
+    font-size="13"
+    fill="#1a1a1a"
+    letter-spacing="7.5"
+  >MOTOREN</text>
+</svg>
