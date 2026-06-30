@@ -125,5 +125,14 @@
   document.addEventListener("DOMContentLoaded", () => {
     syncFormMode();
     load();
+
+    document.querySelectorAll(".social-card").forEach(function (card) {
+      card.addEventListener("click", function () {
+        var platform = card.classList.contains("yt") ? "YouTube"
+                     : card.classList.contains("tt") ? "TikTok"
+                     : "Instagram";
+        KMJ.trackEvent("social_click", { platform: platform });
+      });
+    });
   });
 })();
