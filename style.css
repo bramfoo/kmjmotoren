@@ -141,7 +141,7 @@ body {
 .hero {
   background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 60%, #2b2b2b 100%);
   color: var(--white);
-  padding: 5rem 0 3rem;
+  padding: 5rem 0 0;
   position: relative;
   overflow: hidden;
 }
@@ -216,7 +216,7 @@ body {
   margin-top: 3rem;
   line-height: 0;
 }
-.hero-wave svg { display: block; width: 100%; height: 60px; }
+.hero-wave svg { display: block; width: 100%; height: 80px; }
 
 /* ── USP STRIP ── */
 .usp-strip {
@@ -622,6 +622,84 @@ body {
 }
 .footer-nav a:hover { color: var(--orange); }
 
+/* ── COOKIE BANNER ── */
+#cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: #1a1a1a;
+  color: #fff;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.3);
+}
+.cb-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.cb-text {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.5;
+  flex: 1;
+  min-width: 200px;
+}
+.cb-text strong { color: #fff; }
+.cb-btns {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+.cb-btn-secondary {
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+.cb-btn-secondary:hover {
+  color: #fff;
+  border-color: rgba(255,255,255,0.6);
+}
+.cb-btn-primary {
+  background: #fff;
+  color: #1a1a1a;
+  border: 1px solid #fff;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+.cb-btn-primary:hover { background: rgba(255,255,255,0.9); }
+
+.cookie-settings-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+  padding: 0;
+  transition: color var(--transition);
+}
+.cookie-settings-btn:hover { color: rgba(255,255,255,0.65); }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .usp-grid { grid-template-columns: repeat(2, 1fr); }
@@ -655,7 +733,7 @@ body {
     text-align: center;
   }
 
-  .hero { padding: 3rem 0 1rem; }
+  .hero { padding: 3rem 0 0; }
   .hero-inner { flex-direction: column; gap: 2rem; }
   .hero-badge { order: -1; }
   .badge-circle { width: 110px; height: 110px; }

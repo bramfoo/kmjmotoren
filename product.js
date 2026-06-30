@@ -73,6 +73,7 @@
     try {
       const p = await KMJ.get("/api/products/" + encodeURIComponent(id));
       render(p);
+      KMJ.trackEvent('view_item', { item_id: String(p.id), item_name: p.name, price: p.price || 0 });
     } catch (err) {
       showError("Dit product kon niet worden gevonden.");
     }
@@ -82,6 +83,9 @@
   function val(elId) { return document.getElementById(elId).value.trim(); }
 
   function openBuyModal() {
+    if (currentProduct) {
+      KMJ.trackEvent('begin_checkout', { item_id: String(currentProduct.id), item_name: currentProduct.name, price: currentProduct.price || 0 });
+    }
     document.getElementById("buy-form-wrap").hidden = false;
     document.getElementById("buy-success").hidden = true;
     document.getElementById("buy-msg").textContent = "";
