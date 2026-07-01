@@ -63,6 +63,9 @@
     },
   };
 
+  // Merge onto any existing window.KMJ (e.g. trackEvent from analytics.js)
+  // so it works regardless of script load order, instead of overwriting it.
+  if (window.KMJ) Object.assign(KMJ, window.KMJ);
   window.KMJ = KMJ;
 
   // ── Login modal + admin floating button ─────────────────────────────
